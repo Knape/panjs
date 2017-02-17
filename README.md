@@ -53,7 +53,7 @@ bower install panjs --save
 <table>
   <tr>
     <td>setup</td>
-    <td>Binds eventlisteners, merging default and user options, setup the pinch based on DOM (called once during initialisation). Call setup if DOM or user options have changed or eventlisteners needs to be rebinded.</td>
+    <td>Binds eventlisteners, merging default and user options, setup the pan based on DOM (called once during initialisation). Call setup if DOM or user options have changed or eventlisteners needs to be rebinded.</td>
   </tr>
   <tr>
     <td>reset</td>
