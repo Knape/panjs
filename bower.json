@@ -1,0 +1,29 @@
+{
+  "name": "panjs",
+  "description": "",
+  "main": "dist/panjs.js",
+  "authors": [
+    "Philip Knape"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/Knape/panjs",
+  "moduleType": [
+    "umd"
+  ],
+  "keywords": [
+    "pan",
+    "image",
+    "mouse",
+    "JavaScript",
+    "Vanilla",
+    "drag"
+  ],
+  "version": "0.5.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
