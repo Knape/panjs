@@ -8,6 +8,12 @@
 
 ### Releases
 
+### `0.6.1` — February 20, 2017
+
+###### NEW FEATURES
+
+- Adds events to panjs
+
 ### `0.6.0` — February 20, 2017
 
 ###### BREAKING CHANGES
