@@ -4,5 +4,5 @@ import 'prismjs/themes/prism.css';
 import handleEvent from './handle-event';
 import panjs from '../src/';
 
-panjs('.example-one img');
-panjs('.example-two img');
+panjs('.example-one');
+panjs('.example-two');

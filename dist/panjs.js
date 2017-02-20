@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -87,7 +87,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _panjs = __webpack_require__(1);
+var _panjs = __webpack_require__(2);
 
 var _panjs2 = _interopRequireDefault(_panjs);
 
@@ -105,21 +105,43 @@ exports.default = _panjs2.default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = {
+  target: null
+};
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.sanitizeOffset = undefined;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var getParentElement = function getParentElement() {
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _defaults = __webpack_require__(1);
+
+var _defaults2 = _interopRequireDefault(_defaults);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var getElement = function getElement() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'width';
   return function (el) {
-    var parentRect = el.parentElement;
-    return parentRect && type ? parentRect.getBoundingClientRect()[type] : 0;
+    return type ? el.getBoundingClientRect()[type] : el.getBoundingClientRect();
   };
 };
 
-var getParentWidth = getParentElement('width');
-var getParentHeight = getParentElement('height');
-var getParentX = getParentElement('left');
-var getParentY = getParentElement('top');
+var getWidth = getElement('width');
+var getHeight = getElement('height');
+var getX = getElement('left');
+var getY = getElement('top');
 
 var subtract = function subtract(el) {
   return function (acc, val) {
@@ -132,20 +154,24 @@ var calcOffset = function calcOffset(e, type) {
     rest[_key - 2] = arguments[_key];
   }
 
-  return Math.abs(Math.floor(rest.reduce(subtract(e.target), 0) - e[type]));
+  return Math.abs(Math.floor(rest.reduce(subtract(e.currentTarget), 0) - e[type]));
 };
 
 var getOffset = function getOffset(e) {
   return {
-    x: calcOffset(e, 'clientX', getParentX) / getParentWidth(e.target),
-    y: calcOffset(e, 'clientY', getParentY) / getParentHeight(e.target)
+    x: calcOffset(e, 'clientX', getX) / getWidth(e.currentTarget),
+    y: calcOffset(e, 'clientY', getY) / getHeight(e.currentTarget)
   };
 };
 
-var sanitizeOffset = exports.sanitizeOffset = function sanitizeOffset(el, offset) {
+var sanitizeOffset = exports.sanitizeOffset = function sanitizeOffset(el, image, offset) {
+  var _image$getBoundingCli = image.getBoundingClientRect(),
+      width = _image$getBoundingCli.width,
+      height = _image$getBoundingCli.height;
+
   return {
-    x: (el.getBoundingClientRect().width - getParentWidth(el)) * offset.x,
-    y: (el.getBoundingClientRect().height - getParentHeight(el)) * offset.y
+    x: (width - getWidth(el)) * offset.x,
+    y: (height - getHeight(el)) * offset.y
   };
 };
 
@@ -167,14 +193,23 @@ var panjs = function panjs(targets) {
   var element = null;
   var offset = {};
 
+  // Base configuration for the pinch instance
+  var opts = _extends({}, _defaults2.default, options);
+
   var calcMove = function calcMove(e) {
     offset = getOffset(e);
-    moveEl(e.target, sanitizeOffset(e.target, offset));
+    var imageTarget = opts.target ? 'img' + opts.target : 'img';
+    var image = e.currentTarget.querySelector(imageTarget);
+    if (!image) return;
+    moveEl(image, sanitizeOffset(e.currentTarget, image, offset));
   };
 
   var calcMoveResize = function calcMoveResize() {
     if (!element || offset) return;
-    moveEl(element, sanitizeOffset(element, offset));
+    var imageTarget = opts.target ? 'img' + opts.target : 'img';
+    var image = element.querySelector(imageTarget);
+    if (!image) return;
+    moveEl(image, sanitizeOffset(element, image, offset));
   };
 
   var attachEvents = function attachEvents(el) {
@@ -223,9 +258,6 @@ var panjs = function panjs(targets) {
     if (element) destroy();
     // dispatchPinchEvent('init', 'before', {});
 
-    // Base configuration for the pinch instance
-    // opts = {...defaults, ...opt};
-
     // resolve target
     // pinchit allows for both a node or a string to be passed
     switch (typeof target === 'undefined' ? 'undefined' : _typeof(target)) {
@@ -239,7 +271,6 @@ var panjs = function panjs(targets) {
         element = null;
         console.warn('missing target, either pass an node or a string');
     }
-
     return element ? attachEvents(element) : undefined;
 
     // dispatchPinchEvent('init', 'after', {});
@@ -259,7 +290,7 @@ var panjs = function panjs(targets) {
 exports.default = panjs;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(0);
