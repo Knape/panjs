@@ -1,7 +1,7 @@
 {
   "name": "panjs",
-  "version": "0.5.0",
-  "description": "",
+  "version": "0.6.0",
+  "description": "Modern, tiny library for paning images without dependencies",
   "keywords": [],
   "main": "lib/index.js",
   "jsnext:main": "./src/index.js",
