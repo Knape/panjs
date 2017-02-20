@@ -1,46 +1,8 @@
 // @flow
 
 import defaults from './defaults';
-
-const getElement = (type: string = 'width') => (el: EventTarget): number => {
-  return (type) ? el.getBoundingClientRect()[type] : el.getBoundingClientRect();
-};
-
-const getWidth = getElement('width');
-const getHeight = getElement('height');
-const getX = getElement('left');
-const getY = getElement('top');
-
-const subtract = (el: EventTarget) => (acc: number, val: Function): number => (
-  (acc === 0) ? acc + val(el) : acc - val(el)
-);
-
-const calcOffset = (e: MouseEvent, type: string, ...rest: Array<Function>) => (
-  Math.abs(Math.floor(rest.reduce(subtract(e.currentTarget), 0) - e[type]))
-);
-
-const getOffset = (e: MouseEvent): Object => ({
-  x: calcOffset(e, 'clientX', getX) / getWidth(e.currentTarget),
-  y: calcOffset(e, 'clientY', getY) / getHeight(e.currentTarget),
-});
-
-export const sanitizeOffset = (el: HTMLElement, image: HTMLElement, offset: Object): Object => {
-  const { width, height } = image.getBoundingClientRect();
-  return {
-    x: (width - getWidth(el)) * offset.x,
-    y: (height - getHeight(el)) * offset.y
-  };
-};
-
-const moveEl = (el: HTMLElement, coords: Object): void => {
-  const { style } = el;
-
-  const offsetX = -coords.x;
-  const offsetY = -coords.y;
-  const translateProp = `translate(${offsetX}px, ${offsetY}px)`;
-
-  style.transform = `${translateProp}`;
-};
+import eventDispatcher from './events';
+import { sanitizeOffset, getOffset, moveEl } from './utils';
 
 const panjs = (targets: string | Object, options: Object = {}) => {
   // private variable cache
@@ -49,6 +11,25 @@ const panjs = (targets: string | Object, options: Object = {}) => {
 
   // Base configuration for the pinch instance
   const opts = {...defaults, ...options};
+  const { on, dispatch } = eventDispatcher();
+
+  /**
+  *  dispatchPinchEvent - Shorthand method for creating events
+  *
+  *  @param { String } phase
+  *  @param { String } type
+  *  @param { Object } details
+  *  @return { Void }
+  **/
+  const dispatchPanEvent = (eventName: string, phase: string, event: Object = {}): void => {
+    dispatch(eventName, Object.assign(event, {
+      phase
+    }));
+  };
+
+  const mouseEnter = (e: MouseEvent): void => {
+    dispatchPanEvent('mouseenter', 'before', e);
+  };
 
   const calcMove = (e: MouseEvent): void => {
     offset = getOffset(e);
@@ -58,8 +39,12 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     moveEl(image, sanitizeOffset(e.currentTarget, image, offset));
   };
 
+  const mouseLeave = (e: MouseEvent): void => {
+    dispatchPanEvent('mouseleave', 'before', e);
+  };
+
   const calcMoveResize = (): void => {
-    if (!element || offset) return;
+    if (!element || !Object.hasOwnProperty.call(offset, 'x')) return;
     const imageTarget = opts.target ? `img${opts.target}` : 'img';
     const image = element.querySelector(imageTarget);
     if (!image) return;
@@ -67,12 +52,16 @@ const panjs = (targets: string | Object, options: Object = {}) => {
   };
 
   const attachEvents = (el: HTMLElement): void => {
+    el.addEventListener('mouseenter', mouseEnter);
     el.addEventListener('mousemove', calcMove);
+    el.addEventListener('mouseleave', mouseLeave);
     window.addEventListener('resize', calcMoveResize);
   };
 
   const detachhEvents = (el: HTMLElement): void => {
-    el.removeEventListener('touchstart', calcMove);
+    el.removeEventListener('mouseenter', mouseEnter);
+    el.removeEventListener('mousemove', calcMove);
+    el.removeEventListener('mouseleave', mouseLeave);
     window.removeEventListener('resize', calcMoveResize);
   };
 
@@ -95,11 +84,11 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    */
   const destroy = (): void => {
     if (!element) return;
-    // dispatchPinchEvent('destroy', 'before', {});
+    dispatchPanEvent('destroy', 'before', {});
     reset();
     // remove event listeners
     detachhEvents(element);
-    // dispatchPinchEvent('destroy', 'after', {});
+    dispatchPanEvent('destroy', 'after', {});
   };
 
   /**
@@ -110,7 +99,7 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    **/
   const setup = (target: string | Object): void => {
     if (element) destroy();
-    // dispatchPinchEvent('init', 'before', {});
+    dispatchPanEvent('init', 'before', {});
 
     // resolve target
     // pinchit allows for both a node or a string to be passed
@@ -125,9 +114,12 @@ const panjs = (targets: string | Object, options: Object = {}) => {
         element = null;
         console.warn('missing target, either pass an node or a string');
     }
-    return (element) ? attachEvents(element) : undefined;
 
-    // dispatchPinchEvent('init', 'after', {});
+    if (element) {
+      attachEvents(element);
+    }
+
+    dispatchPanEvent('init', 'after', {});
   };
 
   // trigger initial setup
@@ -138,6 +130,7 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     reset,
     destroy,
     element,
+    on,
   };
 };
 
