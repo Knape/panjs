@@ -41,9 +41,9 @@ bower install panjs --save
 
 ```js
   import panjs from 'panjs';
-  var img = document.querySelectorAll('img');
+  var wrapper = document.querySelectorAll('.img-wrapper');
 
-  panjs(img, {
+  panjs(wrapper, {
     // options going here, at the moment we do not support any options
   });
 ```
