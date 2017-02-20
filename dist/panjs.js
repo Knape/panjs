@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -87,7 +87,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _panjs = __webpack_require__(2);
+var _panjs = __webpack_require__(3);
 
 var _panjs2 = _interopRequireDefault(_panjs);
 
@@ -119,7 +119,66 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.sanitizeOffset = undefined;
+
+
+/**
+ * dispatch custom events
+ */
+
+var eventDispatcher = function eventDispatcher() {
+  var events = {};
+
+  /**
+   * Register a handler for event, to be fired
+   * for every event.
+   */
+  var on = function on(eventName, handler) {
+    events[eventName] = events[eventName] || [];
+    events[eventName].push(handler);
+    return undefined;
+  };
+
+  /**
+   * Deregister a handler for event.
+   */
+  var off = function off(eventName, handler) {
+    if (events[eventName]) {
+      for (var i = 0; i < events[eventName].length; i += 1) {
+        if (events[eventName][i] === handler) {
+          events[eventName].splice(i, 1);
+          break;
+        }
+      }
+    }
+  };
+
+  var dispatch = function dispatch(eventName, data) {
+    if (events[eventName]) {
+      events[eventName].forEach(function (fn) {
+        fn(data);
+      });
+    }
+  };
+
+  return {
+    on: on,
+    off: off,
+    dispatch: dispatch
+  };
+};
+
+exports.default = eventDispatcher;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -129,8 +188,165 @@ var _defaults = __webpack_require__(1);
 
 var _defaults2 = _interopRequireDefault(_defaults);
 
+var _events = __webpack_require__(2);
+
+var _events2 = _interopRequireDefault(_events);
+
+var _utils = __webpack_require__(4);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var panjs = function panjs(targets) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  // private variable cache
+  var element = null;
+  var offset = {};
+
+  // Base configuration for the pinch instance
+  var opts = _extends({}, _defaults2.default, options);
+
+  var _eventDispatcher = (0, _events2.default)(),
+      on = _eventDispatcher.on,
+      dispatch = _eventDispatcher.dispatch;
+
+  /**
+  *  dispatchPinchEvent - Shorthand method for creating events
+  *
+  *  @param { String } phase
+  *  @param { String } type
+  *  @param { Object } details
+  *  @return { Void }
+  **/
+
+
+  var dispatchPanEvent = function dispatchPanEvent(eventName, phase) {
+    var event = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    dispatch(eventName, Object.assign(event, {
+      phase: phase
+    }));
+  };
+
+  var mouseEnter = function mouseEnter(e) {
+    dispatchPanEvent('mouseenter', 'before', e);
+  };
+
+  var calcMove = function calcMove(e) {
+    offset = (0, _utils.getOffset)(e);
+    var imageTarget = opts.target ? 'img' + opts.target : 'img';
+    var image = e.currentTarget.querySelector(imageTarget);
+    if (!image) return;
+    (0, _utils.moveEl)(image, (0, _utils.sanitizeOffset)(e.currentTarget, image, offset));
+  };
+
+  var mouseLeave = function mouseLeave(e) {
+    dispatchPanEvent('mouseleave', 'before', e);
+  };
+
+  var calcMoveResize = function calcMoveResize() {
+    if (!element || !Object.hasOwnProperty.call(offset, 'x')) return;
+    var imageTarget = opts.target ? 'img' + opts.target : 'img';
+    var image = element.querySelector(imageTarget);
+    if (!image) return;
+    (0, _utils.moveEl)(image, (0, _utils.sanitizeOffset)(element, image, offset));
+  };
+
+  var attachEvents = function attachEvents(el) {
+    el.addEventListener('mouseenter', mouseEnter);
+    el.addEventListener('mousemove', calcMove);
+    el.addEventListener('mouseleave', mouseLeave);
+    window.addEventListener('resize', calcMoveResize);
+  };
+
+  var detachhEvents = function detachhEvents(el) {
+    el.removeEventListener('mouseenter', mouseEnter);
+    el.removeEventListener('mousemove', calcMove);
+    el.removeEventListener('mouseleave', mouseLeave);
+    window.removeEventListener('resize', calcMoveResize);
+  };
+
+  /**
+   * public
+   * reset function:
+   * @param { Number } duration
+   * @param { String } easing
+   * @return { Void }
+   */
+  var reset = function reset() {
+    if (!element) return;
+    (0, _utils.moveEl)(element, { x: 0, y: 0 });
+  };
+
+  /**
+   * public
+   * destroy function: called to gracefully destroy the lory instance
+   * @return { Void }
+   */
+  var destroy = function destroy() {
+    if (!element) return;
+    dispatchPanEvent('destroy', 'before', {});
+    reset();
+    // remove event listeners
+    detachhEvents(element);
+    dispatchPanEvent('destroy', 'after', {});
+  };
+
+  /**
+   * setup - Init function
+   *
+   * @param { String, Object }
+   * @return { Void }
+   **/
+  var setup = function setup(target) {
+    if (element) destroy();
+    dispatchPanEvent('init', 'before', {});
+
+    // resolve target
+    // pinchit allows for both a node or a string to be passed
+    switch (typeof target === 'undefined' ? 'undefined' : _typeof(target)) {
+      case 'object':
+        element = target;
+        break;
+      case 'string':
+        element = document.querySelector(target);
+        break;
+      default:
+        element = null;
+        console.warn('missing target, either pass an node or a string');
+    }
+
+    if (element) {
+      attachEvents(element);
+    }
+
+    dispatchPanEvent('init', 'after', {});
+  };
+
+  // trigger initial setup
+  setup(targets, options);
+
+  return {
+    setup: setup,
+    reset: reset,
+    destroy: destroy,
+    element: element,
+    on: on
+  };
+};
+
+exports.default = panjs;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var getElement = function getElement() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'width';
   return function (el) {
@@ -157,7 +373,7 @@ var calcOffset = function calcOffset(e, type) {
   return Math.abs(Math.floor(rest.reduce(subtract(e.currentTarget), 0) - e[type]));
 };
 
-var getOffset = function getOffset(e) {
+var getOffset = exports.getOffset = function getOffset(e) {
   return {
     x: calcOffset(e, 'clientX', getX) / getWidth(e.currentTarget),
     y: calcOffset(e, 'clientY', getY) / getHeight(e.currentTarget)
@@ -175,7 +391,7 @@ var sanitizeOffset = exports.sanitizeOffset = function sanitizeOffset(el, image,
   };
 };
 
-var moveEl = function moveEl(el, coords) {
+var moveEl = exports.moveEl = function moveEl(el, coords) {
   var style = el.style;
 
 
@@ -186,111 +402,8 @@ var moveEl = function moveEl(el, coords) {
   style.transform = '' + translateProp;
 };
 
-var panjs = function panjs(targets) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  // private variable cache
-  var element = null;
-  var offset = {};
-
-  // Base configuration for the pinch instance
-  var opts = _extends({}, _defaults2.default, options);
-
-  var calcMove = function calcMove(e) {
-    offset = getOffset(e);
-    var imageTarget = opts.target ? 'img' + opts.target : 'img';
-    var image = e.currentTarget.querySelector(imageTarget);
-    if (!image) return;
-    moveEl(image, sanitizeOffset(e.currentTarget, image, offset));
-  };
-
-  var calcMoveResize = function calcMoveResize() {
-    if (!element || offset) return;
-    var imageTarget = opts.target ? 'img' + opts.target : 'img';
-    var image = element.querySelector(imageTarget);
-    if (!image) return;
-    moveEl(image, sanitizeOffset(element, image, offset));
-  };
-
-  var attachEvents = function attachEvents(el) {
-    el.addEventListener('mousemove', calcMove);
-    window.addEventListener('resize', calcMoveResize);
-  };
-
-  var detachhEvents = function detachhEvents(el) {
-    el.removeEventListener('touchstart', calcMove);
-    window.removeEventListener('resize', calcMoveResize);
-  };
-
-  /**
-   * public
-   * reset function:
-   * @param { Number } duration
-   * @param { String } easing
-   * @return { Void }
-   */
-  var reset = function reset() {
-    if (!element) return;
-    moveEl(element, { x: 0, y: 0 });
-  };
-
-  /**
-   * public
-   * destroy function: called to gracefully destroy the lory instance
-   * @return { Void }
-   */
-  var destroy = function destroy() {
-    if (!element) return;
-    // dispatchPinchEvent('destroy', 'before', {});
-    reset();
-    // remove event listeners
-    detachhEvents(element);
-    // dispatchPinchEvent('destroy', 'after', {});
-  };
-
-  /**
-   * setup - Init function
-   *
-   * @param { String, Object }
-   * @return { Void }
-   **/
-  var setup = function setup(target) {
-    if (element) destroy();
-    // dispatchPinchEvent('init', 'before', {});
-
-    // resolve target
-    // pinchit allows for both a node or a string to be passed
-    switch (typeof target === 'undefined' ? 'undefined' : _typeof(target)) {
-      case 'object':
-        element = target;
-        break;
-      case 'string':
-        element = document.querySelector(target);
-        break;
-      default:
-        element = null;
-        console.warn('missing target, either pass an node or a string');
-    }
-    return element ? attachEvents(element) : undefined;
-
-    // dispatchPinchEvent('init', 'after', {});
-  };
-
-  // trigger initial setup
-  setup(targets, options);
-
-  return {
-    setup: setup,
-    reset: reset,
-    destroy: destroy,
-    element: element
-  };
-};
-
-exports.default = panjs;
-
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(0);

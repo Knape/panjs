@@ -200,11 +200,6 @@ div pre.language-markup, div pre.language-css {
   border: #9E7780 10px solid;
 }
 
-.example-two {
-  width: 50%;
-  float: left;
-}
-
 .steps:nth-child(even) .img-example {
   border: #fff 10px solid;
 }

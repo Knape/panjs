@@ -5,4 +5,9 @@ import handleEvent from './handle-event';
 import panjs from '../src/';
 
 panjs('.example-one');
-panjs('.example-two');
+
+const target = document.querySelector('.event-target');
+const handleEventExample = handleEvent(target);
+const panEvent = panjs('.example-two');
+
+panEvent.on('mouseenter', handleEventExample);
