@@ -218,12 +218,16 @@ var _utils = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var setTarget = function setTarget(el, opts) {
+  return el.querySelector(opts.target ? 'img' + opts.target : 'img');
+};
+
 var panjs = function panjs(targets) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   // private variable cache
   var element = null;
-  var offset = _extends({}, options.offset);
+  var offset = _extends({}, _defaults2.default.offset, options.offset);
 
   // Base configuration for the pinch instance
   var opts = _extends({}, _defaults2.default, options);
@@ -255,11 +259,10 @@ var panjs = function panjs(targets) {
   };
 
   var calcMove = function calcMove(e) {
-    offset = (0, _utils.getOffset)(e);
-    var imageTarget = opts.target ? 'img' + opts.target : 'img';
-    var image = e.currentTarget.querySelector(imageTarget);
+    offset = (0, _utils.getOffsetProcent)(e);
+    var image = setTarget(e.currentTarget, opts);
     if (!image) return;
-    (0, _utils.moveEl)(image, (0, _utils.sanitizeOffset)(e.currentTarget, image, offset), opts);
+    (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(e.currentTarget, image, offset), opts);
   };
 
   var mouseLeave = function mouseLeave(e) {
@@ -268,10 +271,9 @@ var panjs = function panjs(targets) {
 
   var calcMoveResize = function calcMoveResize() {
     if (!element || !Object.hasOwnProperty.call(offset, 'x')) return;
-    var imageTarget = opts.target ? 'img' + opts.target : 'img';
-    var image = element.querySelector(imageTarget);
+    var image = setTarget(element, opts);
     if (!image) return;
-    (0, _utils.moveEl)(image, (0, _utils.sanitizeOffset)(element, image, offset), opts);
+    (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(element, image, offset), opts);
   };
 
   var attachEvents = function attachEvents(el) {
@@ -299,10 +301,10 @@ var panjs = function panjs(targets) {
     var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     if (!element) return;
-    var imageTarget = opts.target ? 'img' + opts.target : 'img';
-    var image = element.querySelector(imageTarget);
+    var image = setTarget(element, opts);
     if (!image) return;
-    (0, _utils.moveEl)(image, Object.assign(opts.offset, opt.offset), opts);
+    var combinedOffset = Object.assign(opts.offset, opt.offset);
+    (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(element, image, combinedOffset), opts);
   };
 
   /**
@@ -317,6 +319,10 @@ var panjs = function panjs(targets) {
     // remove event listeners
     detachhEvents(element);
     dispatchPanEvent('destroy', 'after', {});
+  };
+
+  var getOffset = function getOffset() {
+    return offset;
   };
 
   /**
@@ -344,8 +350,9 @@ var panjs = function panjs(targets) {
     }
 
     if (element) {
+      var image = setTarget(element, opts);
       attachEvents(element);
-      (0, _utils.moveEl)(element.querySelector('img'), offset);
+      (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(element, image, offset), opts);
     }
 
     dispatchPanEvent('init', 'after', {});
@@ -359,6 +366,7 @@ var panjs = function panjs(targets) {
     reset: reset,
     destroy: destroy,
     element: element,
+    getOffset: getOffset,
     on: on
   };
 };
@@ -415,14 +423,14 @@ var calcOffset = function calcOffset(e, type) {
   return Math.abs(Math.floor(rest.reduce(subtract(e.currentTarget), 0) - e[type]));
 };
 
-var getOffset = exports.getOffset = function getOffset(e) {
+var getOffsetProcent = exports.getOffsetProcent = function getOffsetProcent(e) {
   return {
     x: calcOffset(e, 'clientX', getX) / getWidth(e.currentTarget),
     y: calcOffset(e, 'clientY', getY) / getHeight(e.currentTarget)
   };
 };
 
-var sanitizeOffset = exports.sanitizeOffset = function sanitizeOffset(el, image, offset) {
+var getOffsetPixel = exports.getOffsetPixel = function getOffsetPixel(el, image, offset) {
   var _image$getBoundingCli = image.getBoundingClientRect(),
       width = _image$getBoundingCli.width,
       height = _image$getBoundingCli.height;
