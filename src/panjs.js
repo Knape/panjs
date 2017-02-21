@@ -120,7 +120,9 @@ const panjs = (targets: string | Object, options: Object = {}) => {
 
     if (element) {
       attachEvents(element);
-      moveEl(element.querySelector('img'), offset);
+      const imageTarget = opts.target ? `img${opts.target}` : 'img';
+      const image = element.querySelector(imageTarget);
+      moveEl(image, offset);
     }
 
     dispatchPanEvent('init', 'after', {});
