@@ -63,6 +63,10 @@ bower install panjs --save
     <td>destroy</td>
     <td>destroys the panjs instance by removing all panjs specific event listeners</td>
   </tr>
+  <tr>
+    <td>offset</td>
+    <td>get the current offset in procent</td>
+  </tr>
 </table>
 
 ## Options

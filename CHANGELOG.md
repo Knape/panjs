@@ -2,13 +2,20 @@
 
 ### In progress
 
-- Removes offset on panjs object
-- Adds getOffset method on panjs object
-- Fixes a couple of offset bugs
-
 ---
 
 ### Releases
+
+### `0.6.5` — February 22, 2017
+
+###### NEW FEATURES
+- Adds getOffset method on panjs object
+
+###### NEW FEATURES
+- Removes offset on panjs object
+
+###### FIXES
+- Fixes a couple of offset bugs
 
 ### `0.6.4` — February 21, 2017
 
