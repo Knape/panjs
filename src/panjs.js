@@ -72,10 +72,12 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    * @param { String } easing
    * @return { Void }
    */
-  const reset = (): void => {
+  const reset = (opt: Object = {}): void => {
     if (!element) return;
-    console.log('reset?');
-    moveEl(element, {x: 0, y: 0}, opts);
+    const imageTarget = opts.target ? `img${opts.target}` : 'img';
+    const image = element.querySelector(imageTarget);
+    if (!image) return;
+    moveEl(image, Object.assign(opts.offset, opt.offset), opts);
   };
 
   /**
@@ -118,7 +120,6 @@ const panjs = (targets: string | Object, options: Object = {}) => {
 
     if (element) {
       attachEvents(element);
-      console.log('element');
       moveEl(element.querySelector('img'), offset);
     }
 
