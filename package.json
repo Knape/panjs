@@ -17,6 +17,7 @@
     "prepublish": "npm run lint && npm run build"
   },
   "devDependencies": {
+    "babel-cli": "^6.23.0",
     "babel-core": "^6.8.0",
     "babel-eslint": "^6.0.2",
     "babel-loader": "~6.2.4",
