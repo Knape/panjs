@@ -76,6 +76,31 @@ document.addEventListener('DOMContentLoaded', () => {
   <div class="steps">
     <section class="container">
       <div class="step step-last">
+        <h4>Example: Reset element</h4>
+      </div>
+      <div class="img-example example-two">
+        <div class="img-wrapper">
+          <img src="assets/images/example-one.jpg" class="" alt="">
+        </div>
+      </div>
+      <div class="reset-button base">reset 0x0</div>
+      <div class="reset-button next">reset to 10x10</div>
+      <pre><code class="language-js">import panjs from 'panjs'
+document.addEventListener('DOMContentLoaded', () => {
+  const resetOne = document.querySelector('.reset-button.base');
+  const resetTwo = document.querySelector('.reset-button.next');
+  const wrapper = document.querySelector('.img-wrapper');
+
+  const pan = panjs(wrapper);
+  
+  resetOne.addEventListener('click', () => pan.reset())
+  resetTwo.addEventListener('click', () => pan.reset({ offset: { x: 10, y: 10 }}))
+});</code></pre>
+    </section>
+  </div>
+  <div class="steps">
+    <section class="container">
+      <div class="step step-last">
         <h4>Example: Events</h4>
       </div>
       <div class="img-example example-two">
