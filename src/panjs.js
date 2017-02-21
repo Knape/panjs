@@ -134,6 +134,7 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     reset,
     destroy,
     element,
+    offset,
     on,
   };
 };
