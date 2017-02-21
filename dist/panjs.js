@@ -296,9 +296,13 @@ var panjs = function panjs(targets) {
    * @return { Void }
    */
   var reset = function reset() {
+    var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     if (!element) return;
-    console.log('reset?');
-    (0, _utils.moveEl)(element, { x: 0, y: 0 }, opts);
+    var imageTarget = opts.target ? 'img' + opts.target : 'img';
+    var image = element.querySelector(imageTarget);
+    if (!image) return;
+    (0, _utils.moveEl)(image, Object.assign(opts.offset, opt.offset), opts);
   };
 
   /**
@@ -341,7 +345,6 @@ var panjs = function panjs(targets) {
 
     if (element) {
       attachEvents(element);
-      console.log('element');
       (0, _utils.moveEl)(element.querySelector('img'), offset);
     }
 
