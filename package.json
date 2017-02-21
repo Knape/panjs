@@ -1,6 +1,6 @@
 {
   "name": "panjs",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Modern, tiny library for paning images without dependencies",
   "keywords": [],
   "main": "lib/index.js",
