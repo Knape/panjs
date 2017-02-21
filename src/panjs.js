@@ -2,12 +2,16 @@
 
 import defaults from './defaults';
 import eventDispatcher from './events';
-import { sanitizeOffset, getOffset, moveEl } from './utils';
+import { getOffsetPixel, getOffsetProcent, moveEl } from './utils';
+
+const setTarget = (el, opts) => (
+  el.querySelector(opts.target ? `img${opts.target}` : 'img')
+);
 
 const panjs = (targets: string | Object, options: Object = {}) => {
   // private variable cache
   let element = null;
-  let offset = {...options.offset};
+  let offset = {...defaults.offset, ...options.offset};
 
   // Base configuration for the pinch instance
   const opts = {...defaults, ...options};
@@ -32,11 +36,10 @@ const panjs = (targets: string | Object, options: Object = {}) => {
   };
 
   const calcMove = (e: MouseEvent): void => {
-    offset = getOffset(e);
-    const imageTarget = opts.target ? `img${opts.target}` : 'img';
-    const image = e.currentTarget.querySelector(imageTarget);
+    offset = getOffsetProcent(e);
+    const image = setTarget(e.currentTarget, opts);
     if (!image) return;
-    moveEl(image, sanitizeOffset(e.currentTarget, image, offset), opts);
+    moveEl(image, getOffsetPixel(e.currentTarget, image, offset), opts);
   };
 
   const mouseLeave = (e: MouseEvent): void => {
@@ -45,10 +48,9 @@ const panjs = (targets: string | Object, options: Object = {}) => {
 
   const calcMoveResize = (): void => {
     if (!element || !Object.hasOwnProperty.call(offset, 'x')) return;
-    const imageTarget = opts.target ? `img${opts.target}` : 'img';
-    const image = element.querySelector(imageTarget);
+    const image = setTarget(element, opts);
     if (!image) return;
-    moveEl(image, sanitizeOffset(element, image, offset), opts);
+    moveEl(image, getOffsetPixel(element, image, offset), opts);
   };
 
   const attachEvents = (el: HTMLElement): void => {
@@ -74,10 +76,10 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    */
   const reset = (opt: Object = {}): void => {
     if (!element) return;
-    const imageTarget = opts.target ? `img${opts.target}` : 'img';
-    const image = element.querySelector(imageTarget);
+    const image = setTarget(element, opts);
     if (!image) return;
-    moveEl(image, Object.assign(opts.offset, opt.offset), opts);
+    const combinedOffset = Object.assign(opts.offset, opt.offset);
+    moveEl(image, getOffsetPixel(element, image, combinedOffset), opts);
   };
 
   /**
@@ -92,6 +94,10 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     // remove event listeners
     detachhEvents(element);
     dispatchPanEvent('destroy', 'after', {});
+  };
+
+  const getOffset = () => {
+    return offset;
   };
 
   /**
@@ -119,10 +125,9 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     }
 
     if (element) {
+      const image = setTarget(element, opts);
       attachEvents(element);
-      const imageTarget = opts.target ? `img${opts.target}` : 'img';
-      const image = element.querySelector(imageTarget);
-      moveEl(image, offset);
+      moveEl(image, getOffsetPixel(element, image, offset), opts);
     }
 
     dispatchPanEvent('init', 'after', {});
@@ -136,7 +141,7 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     reset,
     destroy,
     element,
-    offset,
+    getOffset,
     on,
   };
 };

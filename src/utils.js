@@ -32,12 +32,12 @@ const calcOffset = (e: MouseEvent, type: string, ...rest: Array<Function>) => (
   Math.abs(Math.floor(rest.reduce(subtract(e.currentTarget), 0) - e[type]))
 );
 
-export const getOffset = (e: MouseEvent): Object => ({
+export const getOffsetProcent = (e: MouseEvent): Object => ({
   x: calcOffset(e, 'clientX', getX) / getWidth(e.currentTarget),
   y: calcOffset(e, 'clientY', getY) / getHeight(e.currentTarget),
 });
 
-export const sanitizeOffset = (el: EventTarget, image: HTMLElement, offset: Object): Object => {
+export const getOffsetPixel = (el: EventTarget, image: HTMLElement, offset: Object): Object => {
   const { width, height } = image.getBoundingClientRect();
   return {
     x: (width - getWidth(el)) * offset.x,
