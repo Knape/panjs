@@ -4,7 +4,9 @@ import 'prismjs/themes/prism.css';
 import handleEvent from './handle-event';
 import panjs from '../src/';
 
-panjs('.example-one .img-wrapper');
+panjs('.example-one .img-wrapper', {
+  offset: {x: 10, y: 150},
+});
 
 const target = document.querySelector('.event-target');
 const handleEventExample = handleEvent(target);

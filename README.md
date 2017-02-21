@@ -65,6 +65,36 @@ bower install panjs --save
   </tr>
 </table>
 
+## Options
+
+<table>
+  <tr>
+    <td>Name</td>
+    <td>Description</td>
+    <td>Default</td>
+  </tr>
+  <tr>
+    <td>target</td>
+    <td>If multiple images are inside wrapper, pass a target css selector to select the preferred image</td>
+    <td>null</td>
+  </tr>
+  <tr>
+    <td>offset</td>
+    <td>Start offset for inner image</td>
+    <td>{ x: 0, y: 0 }</td>
+  </tr>
+  <tr>
+    <td>xAxisLock</td>
+    <td>Ability to lock x-axis</td>
+    <td>false</td>
+  </tr>
+  <tr>
+  <td>yAxisLock</td>
+  <td>Ability to lock y-axis</td>
+  <td>false</td>
+  </tr>
+</table>
+
 ## License
 
 [MIT](LICENSE). Copyright (c) 2016 Philip Knape.

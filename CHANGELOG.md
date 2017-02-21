@@ -2,11 +2,16 @@
 
 ### In progress
 
--
-
 ---
 
 ### Releases
+
+### `0.6.2` — February 21, 2017
+
+###### NEW FEATURES
+
+- Allow to set default offset
+- allow to lock axis
 
 ### `0.6.1` — February 20, 2017
 
