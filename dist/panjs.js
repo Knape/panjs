@@ -106,7 +106,29 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = {
-  target: null
+  /**
+   * default taget class for image
+   * @target {String}
+   */
+  target: null,
+
+  /**
+   * default offset
+   * @offset {Object}
+   */
+  offset: { x: 0, y: 0 },
+
+  /**
+   * overwrite to lock x-axis paning
+   * @xAxisLock {Boolean}
+   */
+  xAxisLock: false,
+
+  /**
+   * overwrite to lock y-axis paning
+   * @yAxisLock {Boolean}
+   */
+  yAxisLock: false
 };
 
 /***/ }),
@@ -201,7 +223,7 @@ var panjs = function panjs(targets) {
 
   // private variable cache
   var element = null;
-  var offset = {};
+  var offset = _extends({}, options.offset);
 
   // Base configuration for the pinch instance
   var opts = _extends({}, _defaults2.default, options);
@@ -237,7 +259,7 @@ var panjs = function panjs(targets) {
     var imageTarget = opts.target ? 'img' + opts.target : 'img';
     var image = e.currentTarget.querySelector(imageTarget);
     if (!image) return;
-    (0, _utils.moveEl)(image, (0, _utils.sanitizeOffset)(e.currentTarget, image, offset));
+    (0, _utils.moveEl)(image, (0, _utils.sanitizeOffset)(e.currentTarget, image, offset), opts);
   };
 
   var mouseLeave = function mouseLeave(e) {
@@ -249,7 +271,7 @@ var panjs = function panjs(targets) {
     var imageTarget = opts.target ? 'img' + opts.target : 'img';
     var image = element.querySelector(imageTarget);
     if (!image) return;
-    (0, _utils.moveEl)(image, (0, _utils.sanitizeOffset)(element, image, offset));
+    (0, _utils.moveEl)(image, (0, _utils.sanitizeOffset)(element, image, offset), opts);
   };
 
   var attachEvents = function attachEvents(el) {
@@ -275,7 +297,8 @@ var panjs = function panjs(targets) {
    */
   var reset = function reset() {
     if (!element) return;
-    (0, _utils.moveEl)(element, { x: 0, y: 0 });
+    console.log('reset?');
+    (0, _utils.moveEl)(element, { x: 0, y: 0 }, opts);
   };
 
   /**
@@ -318,6 +341,8 @@ var panjs = function panjs(targets) {
 
     if (element) {
       attachEvents(element);
+      console.log('element');
+      (0, _utils.moveEl)(element.querySelector('img'), offset);
     }
 
     dispatchPanEvent('init', 'after', {});
@@ -347,6 +372,20 @@ exports.default = panjs;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var extractTransform = function extractTransform(value, match) {
+  var items = value.split(')');
+  var foundItem = items.find(function (item) {
+    return item.indexOf(match) > -1;
+  });
+  return foundItem ? foundItem + ')' : '';
+};
+
+var extractStyleProp = function extractStyleProp(style) {
+  return style.slice(style.indexOf('(') + 1, style.lastIndexOf(')')).split(',').map(function (n) {
+    return !isNaN(parseInt(n, 10)) ? parseInt(n, 10) : 0;
+  });
+};
+
 var getElement = function getElement() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'width';
   return function (el) {
@@ -392,13 +431,14 @@ var sanitizeOffset = exports.sanitizeOffset = function sanitizeOffset(el, image,
 };
 
 var moveEl = exports.moveEl = function moveEl(el, coords) {
+  var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var style = el.style;
 
-
-  var offsetX = -coords.x;
-  var offsetY = -coords.y;
+  var translate = extractTransform(style.transform, 'translate');
+  var preOffset = extractStyleProp(translate);
+  var offsetX = opts.xAxisLock ? -Math.abs(preOffset[0] || 0) : -Math.abs(coords.x);
+  var offsetY = opts.yAxisLock ? -Math.abs(preOffset[1] || 0) : -Math.abs(coords.y);
   var translateProp = 'translate(' + offsetX + 'px, ' + offsetY + 'px)';
-
   style.transform = '' + translateProp;
 };
 
