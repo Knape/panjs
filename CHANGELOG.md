@@ -6,6 +6,13 @@
 
 ### Releases
 
+### `0.6.4` — February 21, 2017
+
+###### NEW FEATURES
+
+- Fixed target bug in reset method
+- Allows for option offset to be passed to reset method
+
 ### `0.6.2` — February 21, 2017
 
 ###### NEW FEATURES
