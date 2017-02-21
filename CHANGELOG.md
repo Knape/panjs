@@ -2,6 +2,10 @@
 
 ### In progress
 
+- Removes offset on panjs object
+- Adds getOffset method on panjs object
+- Fixes a couple of offset bugs
+
 ---
 
 ### Releases
