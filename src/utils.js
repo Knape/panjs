@@ -10,7 +10,9 @@ const extractStyleProp = (style: string) => (
   style
     .slice(style.indexOf('(') + 1, style.lastIndexOf(')'))
     .split(',')
-    .map(n => !isNaN(parseInt(n, 10)) ? parseInt(n, 10) : 0)
+    .map((n) => {
+      return !isNaN(parseInt(n, 10)) ? parseInt(n, 10) : 0;
+    })
 );
 
 const getElement = (type: string = 'width') => (el: EventTarget): number => {
