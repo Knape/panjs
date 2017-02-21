@@ -1,3 +1,25 @@
 export default {
+  /**
+   * default taget class for image
+   * @target {String}
+   */
   target: null,
+
+  /**
+   * default offset
+   * @offset {Object}
+   */
+  offset: {x: 0, y: 0},
+
+  /**
+   * overwrite to lock x-axis paning
+   * @xAxisLock {Boolean}
+   */
+  xAxisLock: false,
+
+  /**
+   * overwrite to lock y-axis paning
+   * @yAxisLock {Boolean}
+   */
+  yAxisLock: false
 };

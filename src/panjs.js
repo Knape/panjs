@@ -7,7 +7,7 @@ import { sanitizeOffset, getOffset, moveEl } from './utils';
 const panjs = (targets: string | Object, options: Object = {}) => {
   // private variable cache
   let element = null;
-  let offset = {};
+  let offset = {...options.offset};
 
   // Base configuration for the pinch instance
   const opts = {...defaults, ...options};
@@ -36,7 +36,7 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     const imageTarget = opts.target ? `img${opts.target}` : 'img';
     const image = e.currentTarget.querySelector(imageTarget);
     if (!image) return;
-    moveEl(image, sanitizeOffset(e.currentTarget, image, offset));
+    moveEl(image, sanitizeOffset(e.currentTarget, image, offset), opts);
   };
 
   const mouseLeave = (e: MouseEvent): void => {
@@ -48,7 +48,7 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     const imageTarget = opts.target ? `img${opts.target}` : 'img';
     const image = element.querySelector(imageTarget);
     if (!image) return;
-    moveEl(image, sanitizeOffset(element, image, offset));
+    moveEl(image, sanitizeOffset(element, image, offset), opts);
   };
 
   const attachEvents = (el: HTMLElement): void => {
@@ -74,7 +74,8 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    */
   const reset = (): void => {
     if (!element) return;
-    moveEl(element, {x: 0, y: 0});
+    console.log('reset?');
+    moveEl(element, {x: 0, y: 0}, opts);
   };
 
   /**
@@ -117,6 +118,8 @@ const panjs = (targets: string | Object, options: Object = {}) => {
 
     if (element) {
       attachEvents(element);
+      console.log('element');
+      moveEl(element.querySelector('img'), offset);
     }
 
     dispatchPanEvent('init', 'after', {});
