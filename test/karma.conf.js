@@ -73,13 +73,14 @@ module.exports = (config) => {
       'karma-fixture',
       'karma-html2js-preprocessor',
       'karma-firefox-launcher',
+      'karma-phantomjs-launcher',
       'istanbul-instrumenter-loader',
     ],
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: process.env.TRAVIS ? [] : ['progress', 'coverage'],
+    reporters: process.env.TRAVIS ? ['progress'] : ['progress', 'coverage'],
 
     coverageReporter: {
       dir: 'test',
@@ -110,7 +111,12 @@ module.exports = (config) => {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Firefox'],
+    browsers: process.env.TRAVIS ? ['Firefox'] : ['Firefox'],
+
+    phantomjsLauncher: {
+      // Have phantomjs exit if a ResourceError is encountered (useful if karma exits without killing phantom)
+      exitOnResourceError: true
+    },
 
     browserNoActivityTimeout: 60000,
 
