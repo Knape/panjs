@@ -25,10 +25,10 @@ const panjs = (targets: string | Object, options: Object = {}) => {
   *  @param { Object } details
   *  @return { Void }
   **/
-  const dispatchPanEvent = (eventName: string, phase: string, offset: Object, event: Object = {}): void => {
+  const dispatchPanEvent = (eventName: string, phase: string, off: Object, event: Object = {}): void => {
     dispatch(eventName, Object.assign(event, {
       phase,
-      offset,
+      offset: off,
     }));
   };
 
