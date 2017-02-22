@@ -92,10 +92,10 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    * destroy function: called to gracefully destroy the lory instance
    * @return { Void }
    */
-  const destroy = (): void => {
+  const destroy = (opt: Object = {}): void => {
     if (!element) return;
     dispatchPanEvent('destroy', 'before', {}, {});
-    reset();
+    reset(opt);
     // remove event listeners
     detachhEvents(element);
     dispatchPanEvent('destroy', 'after', {}, {});
