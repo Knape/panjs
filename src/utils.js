@@ -15,8 +15,8 @@ const extractStyleProp = (style: string) => (
     })
 );
 
-const getElement = (type: string = 'width') => (el: EventTarget): number => {
-  return (type) ? el.getBoundingClientRect()[type] : el.getBoundingClientRect();
+const getElement = (type: string) => (el: EventTarget): number => {
+  return el.getBoundingClientRect()[type];
 };
 
 const getWidth = getElement('width');
