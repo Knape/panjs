@@ -25,31 +25,36 @@ const panjs = (targets: string | Object, options: Object = {}) => {
   *  @param { Object } details
   *  @return { Void }
   **/
-  const dispatchPanEvent = (eventName: string, phase: string, event: Object = {}): void => {
+  const dispatchPanEvent = (eventName: string, phase: string, offset: Object, event: Object = {}): void => {
     dispatch(eventName, Object.assign(event, {
-      phase
+      phase,
+      offset,
     }));
   };
 
   const mouseEnter = (e: MouseEvent): void => {
-    dispatchPanEvent('mouseenter', 'before', e);
+    offset = getOffsetProcent(e);
+    dispatchPanEvent('mouseenter', offset, 'before', e);
   };
 
   const calcMove = (e: MouseEvent): void => {
     offset = getOffsetProcent(e);
     const image = setTarget(e.currentTarget, opts);
     if (!image) return;
+    dispatchPanEvent('mousemove', 'before', offset, e);
     moveEl(image, getOffsetPixel(e.currentTarget, image, offset), opts);
   };
 
   const mouseLeave = (e: MouseEvent): void => {
-    dispatchPanEvent('mouseleave', 'before', e);
+    offset = getOffsetProcent(e);
+    dispatchPanEvent('mouseleave', 'before', offset, e);
   };
 
-  const calcMoveResize = (): void => {
+  const calcMoveResize = (e): void => {
     if (!element || !Object.hasOwnProperty.call(offset, 'x')) return;
     const image = setTarget(element, opts);
     if (!image) return;
+    dispatchPanEvent('resize', 'before', offset, e);
     moveEl(image, getOffsetPixel(element, image, offset), opts);
   };
 
@@ -89,11 +94,11 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    */
   const destroy = (): void => {
     if (!element) return;
-    dispatchPanEvent('destroy', 'before', {});
+    dispatchPanEvent('destroy', 'before', {}, {});
     reset();
     // remove event listeners
     detachhEvents(element);
-    dispatchPanEvent('destroy', 'after', {});
+    dispatchPanEvent('destroy', 'after', {}, {});
   };
 
   const getOffset = () => {
@@ -108,7 +113,7 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    **/
   const setup = (target: string | Object): void => {
     if (element) destroy();
-    dispatchPanEvent('init', 'before', {});
+    dispatchPanEvent('init', 'before', {}, {});
 
     // resolve target
     // pinchit allows for both a node or a string to be passed
@@ -130,7 +135,7 @@ const panjs = (targets: string | Object, options: Object = {}) => {
       moveEl(image, getOffsetPixel(element, image, offset), opts);
     }
 
-    dispatchPanEvent('init', 'after', {});
+    dispatchPanEvent('init', 'after', {}, {});
   };
 
   // trigger initial setup
