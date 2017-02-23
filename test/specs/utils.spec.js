@@ -101,9 +101,10 @@ describe('pinch helpers', () => {
     });
 
     it('should transform translet to image', () => {
+      const node = element.querySelector('.img-wrapper');
       const image = element.querySelector('img');
       // The node should be 100px
-      moveEl(image, {x: -50, y: -50});
+      moveEl(image, node, {x: -50, y: -50});
       const hasTranslate = !!image.outerHTML.indexOf('transform');
       expect(hasTranslate).to.eql(true);
     });
