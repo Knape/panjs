@@ -21,5 +21,17 @@ export default {
    * overwrite to lock y-axis paning
    * @yAxisLock {Boolean}
    */
-  yAxisLock: false
+  yAxisLock: false,
+
+  /**
+   * Default animation speed
+   * @speed {Number}
+   */
+  speed: 0,
+
+  /**
+   * Default easing
+   * @speed {string}
+   */
+  ease: 'ease',
 };

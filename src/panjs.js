@@ -34,15 +34,14 @@ const panjs = (targets: string | Object, options: Object = {}) => {
 
   const mouseEnter = (e: MouseEvent): void => {
     offset = getOffsetProcent(e);
-    dispatchPanEvent('mouseenter', offset, 'before', e);
+    dispatchPanEvent('mouseenter', 'before', offset, e);
   };
 
   const calcMove = (e: MouseEvent): void => {
     offset = getOffsetProcent(e);
     const image = setTarget(e.currentTarget, opts);
-    if (!image) return;
     dispatchPanEvent('mousemove', 'before', offset, e);
-    moveEl(image, getOffsetPixel(e.currentTarget, image, offset), opts);
+    moveEl(image, e.currentTarget, getOffsetPixel(e.currentTarget, image, offset), opts);
   };
 
   const mouseLeave = (e: MouseEvent): void => {
@@ -51,11 +50,9 @@ const panjs = (targets: string | Object, options: Object = {}) => {
   };
 
   const calcMoveResize = (e): void => {
-    if (!element || !Object.hasOwnProperty.call(offset, 'x')) return;
     const image = setTarget(element, opts);
-    if (!image) return;
     dispatchPanEvent('resize', 'before', offset, e);
-    moveEl(image, getOffsetPixel(element, image, offset), opts);
+    moveEl(image, element, getOffsetPixel(element, image, offset), opts);
   };
 
   const attachEvents = (el: HTMLElement): void => {
@@ -83,8 +80,8 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     if (!element) return;
     const image = setTarget(element, opts);
     if (!image) return;
-    const combinedOffset = Object.assign(opts.offset, opt.offset);
-    moveEl(image, getOffsetPixel(element, image, combinedOffset), opts);
+    const resetOpts = Object.assign({}, opts, opt);
+    moveEl(image, element, getOffsetPixel(element, image, resetOpts.offset), resetOpts);
   };
 
   /**
@@ -129,10 +126,10 @@ const panjs = (targets: string | Object, options: Object = {}) => {
         console.warn('missing target, either pass an node or a string');
     }
 
-    if (element) {
+    if (element && setTarget(element, opts)) {
       const image = setTarget(element, opts);
       attachEvents(element);
-      moveEl(image, getOffsetPixel(element, image, offset), opts);
+      moveEl(image, element, getOffsetPixel(element, image, offset), opts);
     }
 
     dispatchPanEvent('init', 'after', {}, {});
