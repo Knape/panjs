@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
       <div class="reset-button base">reset 0x0</div>
-      <div class="reset-button next">reset to 10x10</div>
+      <div class="reset-button next">reset to 0.3x0.3</div>
       <pre><code class="language-js">import panjs from 'panjs'
 document.addEventListener('DOMContentLoaded', () => {
   const resetOne = document.querySelector('.reset-button.base');
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const pan = panjs(wrapper);
 
   resetOne.addEventListener('click', () => pan.reset())
-  resetTwo.addEventListener('click', () => pan.reset({ offset: { x: 10, y: 10 }}))
+  resetTwo.addEventListener('click', () => pan.reset({ offset: { x: 0.3, y: 0.3 }, speed: 300}))
 });</code></pre>
     </section>
   </div>
