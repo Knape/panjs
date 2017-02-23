@@ -1,7 +1,7 @@
 ## panJS
 
 [![Build Status](https://travis-ci.org/Knape/panjs.svg?branch=master)](https://travis-ci.org/Knape/panjs)
-
+[![Coverage Status](https://coveralls.io/repos/github/Knape/panjs/badge.svg?branch=master)](https://coveralls.io/github/Knape/panjs?branch=master)
 ### Description
 Pan images without dependencies
 
