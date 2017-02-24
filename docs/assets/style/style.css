@@ -228,6 +228,10 @@ div pre.language-markup, div pre.language-css {
   height: 400px;
 }
 
+.example-two .img-wrapper {
+  text-align: center;
+}
+
 .img-responsive {
   max-width: 100%;
   height: auto;

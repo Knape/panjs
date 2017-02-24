@@ -8,7 +8,12 @@ panjs('.example-one .img-wrapper', {
   offset: {x: 0, y: 0},
 });
 
-const pan = panjs('.example-two .img-wrapper');
+panjs('.example-two .img-wrapper', {
+  offset: {x: 0, y: 0},
+  xAxisLock: true,
+});
+
+const pan = panjs('.example-three .img-wrapper');
 const resetOne = document.querySelector('.reset-button.base');
 const resetTwo = document.querySelector('.reset-button.next');
 
@@ -17,5 +22,5 @@ resetTwo.addEventListener('click', () => pan.reset({ offset: { x: 0.3, y: 0.3 },
 
 const target = document.querySelector('.event-target');
 const handleEventExample = handleEvent(target);
-const panEvent = panjs('.example-three .img-wrapper');
+const panEvent = panjs('.example-four .img-wrapper');
 panEvent.on('mouseenter', handleEventExample);

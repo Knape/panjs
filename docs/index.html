@@ -55,6 +55,7 @@
 </code></pre>
     </section>
   </div>
+
   <div class="steps">
     <section class="container">
       <div class="step step-last">
@@ -73,12 +74,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });</code></pre>
     </section>
   </div>
+
+  <div class="steps">
+    <section class="container">
+      <div class="step step-last">
+        <h4>Example: Single element</h4>
+      </div>
+      <div class="img-example example-two">
+        <div class="img-wrapper">
+          <img src="assets/images/example-two.jpg" class="" alt="">
+        </div>
+      </div>
+      <pre><code class="language-js">import panjs from 'panjs'
+
+document.addEventListener('DOMContentLoaded', () => {
+  const wrapper = document.querySelector('.img-wrapper');
+  panjs(wrapper);
+});</code></pre>
+    </section>
+  </div>
+
   <div class="steps">
     <section class="container">
       <div class="step step-last">
         <h4>Example: Reset element</h4>
       </div>
-      <div class="img-example example-two">
+      <div class="img-example example-three">
         <div class="img-wrapper">
           <img src="assets/images/example-one.jpg" class="" alt="">
         </div>
@@ -103,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="step step-last">
         <h4>Example: Events</h4>
       </div>
-      <div class="img-example example-three">
+      <div class="img-example example-four">
         <div class="img-wrapper">
           <img src="assets/images/example-one.jpg" class="img-responsive" alt="">
         </div>
