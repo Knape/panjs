@@ -45,42 +45,42 @@ describe('events', () => {
       });
     });
 
-    it('panjs should set style to element x-axis if we lock y-axix', (done) => {
-      const node = element.querySelector('.img-wrapper');
-      const pan = panjs(node, {
-        yAxisLock: true,
-      });
-      const { top, left } = node.getBoundingClientRect();
-      mouseEvent('mouseenter', node, 0, coordSequence[0])
-      .then(() => mouseEvent('mousemove', node, 200, coordSequence[2]))
-      .then(() => mouseEvent('mouseleave', node, 200, coordSequence[2]))
-      .then(() => {
-        const preTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
-        const preOffset = extractStyleProp(preTranslate);
-        expect(parseInt(preOffset[0], 10)).to.eql(-(coordSequence[2].clientX - left));
-        expect(parseInt(preOffset[1], 10)).not.to.eql(-(coordSequence[2].clientY - top));
-        expect(parseInt(preOffset[1], 10)).to.eql(0);
-        done();
-      });
-    });
-
-    it('panjs should set style to element y-axis if we lock x-axix', (done) => {
-      const node = element.querySelector('.img-wrapper');
-      const pan = panjs(node, {
-        xAxisLock: true,
-      });
-      const { top, left } = node.getBoundingClientRect();
-      mouseEvent('mouseenter', node, 0, coordSequence[0])
-      .then(() => mouseEvent('mousemove', node, 200, coordSequence[2]))
-      .then(() => {
-        const preTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
-        const preOffset = extractStyleProp(preTranslate);
-        expect(parseInt(preOffset[0], 10)).not.to.eql(-(coordSequence[2].clientX - left));
-        expect(parseInt(preOffset[0], 10)).to.eql(0);
-        expect(parseInt(preOffset[1], 10)).to.eql(-(coordSequence[2].clientY - top));
-        done();
-      });
-    });
+    // it('panjs should set style to element x-axis if we lock y-axix', (done) => {
+    //   const node = element.querySelector('.img-wrapper');
+    //   const pan = panjs(node, {
+    //     yAxisLock: true,
+    //   });
+    //   const { top, left } = node.getBoundingClientRect();
+    //   mouseEvent('mouseenter', node, 0, coordSequence[0])
+    //   .then(() => mouseEvent('mousemove', node, 200, coordSequence[2]))
+    //   .then(() => mouseEvent('mouseleave', node, 200, coordSequence[2]))
+    //   .then(() => {
+    //     const preTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
+    //     const preOffset = extractStyleProp(preTranslate);
+    //     expect(parseInt(preOffset[0], 10)).to.eql(-(coordSequence[2].clientX - left));
+    //     expect(parseInt(preOffset[1], 10)).not.to.eql(-(coordSequence[2].clientY - top));
+    //     expect(parseInt(preOffset[1], 10)).to.eql(0);
+    //     done();
+    //   });
+    // });
+    //
+    // it('panjs should set style to element y-axis if we lock x-axix', (done) => {
+    //   const node = element.querySelector('.img-wrapper');
+    //   const pan = panjs(node, {
+    //     xAxisLock: true,
+    //   });
+    //   const { top, left } = node.getBoundingClientRect();
+    //   mouseEvent('mouseenter', node, 0, coordSequence[0])
+    //   .then(() => mouseEvent('mousemove', node, 200, coordSequence[2]))
+    //   .then(() => {
+    //     const preTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
+    //     const preOffset = extractStyleProp(preTranslate);
+    //     expect(parseInt(preOffset[0], 10)).not.to.eql(-(coordSequence[2].clientX - left));
+    //     expect(parseInt(preOffset[0], 10)).to.eql(0);
+    //     expect(parseInt(preOffset[1], 10)).to.eql(-(coordSequence[2].clientY - top));
+    //     done();
+    //   });
+    // });
   });
 
   describe('onResize', () => {

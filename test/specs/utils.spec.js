@@ -1,7 +1,7 @@
 /* globals it, describe, before, beforeEach, expect, chai, sinonChai, sinon, fixture */
 /* eslint no-unused-expressions: 0 */
 
-import { getOffsetProcent, getOffsetPixel, moveEl } from '../../src/utils';
+import { getOffsetProcent, getOffsetPixel, moveEl, getWidth, getHeight } from '../../src/utils';
 
 let element;
 
@@ -58,9 +58,11 @@ describe('pinch helpers', () => {
       .then(({el, event}) => {
         const offset = getOffsetProcent(Object.assign({}, event, {
           currentTarget: el,
-        }));
+        }), node.getBoundingClientRect());
+        console.log(offset);
         expect(offset.x).to.eql(x);
         expect(offset.y).to.eql(y);
+        console.log('boom1');
         done();
       });
     });
@@ -72,9 +74,10 @@ describe('pinch helpers', () => {
       .then(({el, event}) => {
         const offset = getOffsetProcent(Object.assign({}, event, {
           currentTarget: el,
-        }));
+        }), node.getBoundingClientRect());
         expect(offset.x).to.eql(x);
         expect(offset.y).to.eql(y);
+        console.log('boom2');
         done();
       });
     });
@@ -88,8 +91,7 @@ describe('pinch helpers', () => {
     it('should convert offset in procent to px', () => {
       const node = element.querySelector('.img-wrapper');
       const image = element.querySelector('img');
-      // The node should be 100px
-      const {x, y} = getOffsetPixel(node, image, {x: -0.5, y: -0.5});
+      const {x, y} = getOffsetPixel(image.getBoundingClientRect(), node.getBoundingClientRect(), {x: -0.5, y: -0.5});
       expect(x).to.eql(-50);
       expect(y).to.eql(-50);
     });
@@ -104,7 +106,7 @@ describe('pinch helpers', () => {
       const node = element.querySelector('.img-wrapper');
       const image = element.querySelector('img');
       // The node should be 100px
-      moveEl(image, node, {x: -50, y: -50});
+      moveEl(image, image.getBoundingClientRect(), node.getBoundingClientRect(), {x: -50, y: -50});
       const hasTranslate = !!image.outerHTML.indexOf('transform');
       expect(hasTranslate).to.eql(true);
     });

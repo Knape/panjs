@@ -56,6 +56,7 @@ describe('panjs()', () => {
         target: '.main-image-two',
         offset: {x: 0.2, y: 0.2},
       });
+      console.log(pan);
       const preTranslate = extractTransform(pan.element.childNodes[3].style.transform, 'translate');
       const preOffset = extractStyleProp(preTranslate);
       expect(preOffset).to.deep.eql([-20, -20]);

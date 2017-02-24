@@ -2,7 +2,7 @@
 
 import defaults from './defaults';
 import eventDispatcher from './events';
-import { getOffsetPixel, getOffsetProcent, moveEl } from './utils';
+import { getOffsetPixel, getOffsetProcent, moveEl, getPosition } from './utils';
 
 const setTarget = (el, opts) => (
   el.querySelector(opts.target ? `img${opts.target}` : 'img')
@@ -11,6 +11,8 @@ const setTarget = (el, opts) => (
 const panjs = (targets: string | Object, options: Object = {}) => {
   // private variable cache
   let element = null;
+  let position = null;
+  let image = null;
   let offset = {...defaults.offset, ...options.offset};
 
   // Base configuration for the pinch instance
@@ -33,26 +35,35 @@ const panjs = (targets: string | Object, options: Object = {}) => {
   };
 
   const mouseEnter = (e: MouseEvent): void => {
-    offset = getOffsetProcent(e);
+    position = getPosition(e.currentTarget);
+    const { width, height } = position();
+    // const width = getWidth(e.currentTarget);
+    // const height = getHeight(e.currentTarget);
+    offset = getOffsetProcent(e, {width, height});
     dispatchPanEvent('mouseenter', 'before', offset, e);
   };
 
   const calcMove = (e: MouseEvent): void => {
-    offset = getOffsetProcent(e);
-    const image = setTarget(e.currentTarget, opts);
+    console.log('----');
+    offset = getOffsetProcent(e, position());
+    const imagePosition = image.getBoundingClientRect();
     dispatchPanEvent('mousemove', 'before', offset, e);
-    moveEl(image, e.currentTarget, getOffsetPixel(e.currentTarget, image, offset), opts);
+    moveEl(image, imagePosition, position(), getOffsetPixel(imagePosition, position(), offset), opts);
   };
 
   const mouseLeave = (e: MouseEvent): void => {
-    offset = getOffsetProcent(e);
+    const { width, height } = position();
+    // const width = getWidth(e.currentTarget);
+    // const height = getHeight(e.currentTarget);
+    offset = getOffsetProcent(e, {width, height});
     dispatchPanEvent('mouseleave', 'before', offset, e);
   };
 
   const calcMoveResize = (e): void => {
-    const image = setTarget(element, opts);
+    position = getPosition(element);
+    const imagePosition = image.getBoundingClientRect();
     dispatchPanEvent('resize', 'before', offset, e);
-    moveEl(image, element, getOffsetPixel(element, image, offset), opts);
+    moveEl(image, imagePosition, position(), getOffsetPixel(imagePosition, position(), offset), opts);
   };
 
   const attachEvents = (el: HTMLElement): void => {
@@ -78,10 +89,11 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    */
   const reset = (opt: Object = {}): void => {
     if (!element) return;
-    const image = setTarget(element, opts);
+    image = setTarget(element, opts);
+    const imagePosition = image.getBoundingClientRect();
     if (!image) return;
     const resetOpts = Object.assign({}, opts, opt);
-    moveEl(image, element, getOffsetPixel(element, image, resetOpts.offset), resetOpts);
+    moveEl(image, imagePosition, position(), getOffsetPixel(imagePosition, position(), resetOpts.offset), resetOpts);
   };
 
   /**
@@ -127,9 +139,11 @@ const panjs = (targets: string | Object, options: Object = {}) => {
     }
 
     if (element && setTarget(element, opts)) {
-      const image = setTarget(element, opts);
+      position = getPosition(element);
+      image = setTarget(element, opts);
+      const imagePosition = image.getBoundingClientRect();
       attachEvents(element);
-      moveEl(image, element, getOffsetPixel(element, image, offset), opts);
+      moveEl(image, imagePosition, position(), getOffsetPixel(imagePosition, position(), offset), opts);
     }
 
     dispatchPanEvent('init', 'after', {}, {});
