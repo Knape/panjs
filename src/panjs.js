@@ -37,14 +37,11 @@ const panjs = (targets: string | Object, options: Object = {}) => {
   const mouseEnter = (e: MouseEvent): void => {
     position = getPosition(e.currentTarget);
     const { width, height } = position();
-    // const width = getWidth(e.currentTarget);
-    // const height = getHeight(e.currentTarget);
     offset = getOffsetProcent(e, {width, height});
     dispatchPanEvent('mouseenter', 'before', offset, e);
   };
 
   const calcMove = (e: MouseEvent): void => {
-    console.log('----');
     offset = getOffsetProcent(e, position());
     const imagePosition = image.getBoundingClientRect();
     dispatchPanEvent('mousemove', 'before', offset, e);
@@ -53,8 +50,6 @@ const panjs = (targets: string | Object, options: Object = {}) => {
 
   const mouseLeave = (e: MouseEvent): void => {
     const { width, height } = position();
-    // const width = getWidth(e.currentTarget);
-    // const height = getHeight(e.currentTarget);
     offset = getOffsetProcent(e, {width, height});
     dispatchPanEvent('mouseleave', 'before', offset, e);
   };

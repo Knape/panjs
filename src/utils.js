@@ -23,7 +23,7 @@ export const getPosition = (el) => {
 };
 
 const calcOffset = (e: MouseEvent, type: string, position) => (
-  Math.abs(Math.floor(position - e[type]))
+  Math.abs(position - e[type])
 );
 
 const handleAnimation = (el: EventTarget, transition: string, duration: number, ease: string): void => {
