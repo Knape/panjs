@@ -1,8 +1,14 @@
 language: node_js
 node_js:
   - 6
+notifications:
+  email: false
 addons:
   firefox: "latest"
+  sauce_connect:
+    username: "Knape"
+  jwt:
+    secure: "LJDwRmvg5H5VdaavBJJCQB5CqDZquj16abyC+QeXId/kcDWu9HIqQX52kLD7sApMxVfYcCHPIdU4xM/uQMHUDquDXw0iovyDXHmwJW9vC/WqVd5owt74YNUoKDKcaJpDEciG2FUkS5FwZ9MNUQP7YDRdyDuKa0ljGZR8V8XBaWjsyZq9WRZ1M91tttnQB8KTYvSJ18F2sx3KpZo+4HqhOeUruJ+ICtFycbLBg/4302VIWfYi/SMjVrLu+YZzi8D+8nP2hu6md94ec9dVq5UFa0WpC+VE/TAz6+uXdjj1+LDZYnAsfgCfA/P7KfI2IqbfeDgbZWHQhz9NkfWDa29i5VMDyo90XU14F0C4MA6vUUkAIHk3SfvbGpwQycGXYJCbtxZggvDTkQ/L1522E2PpG1/XZIZ8AFMrkzrTLCBSEGl/YuHknjFgvD3UP0xVABN1u0A0P9RWBKY1U51yqOkq2lMkJlKz4FT+vTCkt2sFFeZJC+NjJtu8OTQfuzegtHFiTlgGOcAKokdIyqkEAUDkA0V3c1RDl4ApQzH23gZozhYjev+J+HELHFIBONkNgoPP0mf2bgkDMvMqppPFt17d0VXhXQJsmdPIAJndhn/2W1DyKpTFhyMKmbMBQ5lEPsqSNzKz7vC5t1ZdF334gExUKFT03wX1aCwVec2gMRw2MjM="
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start

@@ -64,6 +64,11 @@ bower install panjs --save
 |xAxisLock|Ability to lock x-axis|Boolean|false|
 |yAxisLock|Ability to lock y-axis|Boolean|false|
 
+## Browser support
+
+[![Sauce Test Status](https://saucelabs.com/buildstatus/Knape)](https://saucelabs.com/u/Knape)
+
+
 ## License
 
 [MIT](LICENSE). Copyright (c) 2016 Philip Knape.

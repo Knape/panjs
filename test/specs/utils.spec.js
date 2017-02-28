@@ -2,7 +2,7 @@
 /* eslint no-unused-expressions: 0 */
 
 import { getOffsetProcent, getOffsetPixel, moveEl, getWidth, getHeight } from '../../src/utils';
-
+import { mouseEvent, extractTransform, extractStyleProp } from './utils';
 let element;
 
 const coordSequence = [
@@ -22,20 +22,6 @@ const calc = (node, coords) => {
   };
 };
 
-
-const mouseEvent = (eventType, el, timeout, coords) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const event = document.createEvent('Event');
-      event.initEvent(eventType, true, true);
-      event.clientX = coords.clientX;
-      event.clientY = coords.clientY;
-      el.dispatchEvent(event);
-      resolve({el, event});
-    }, timeout);
-  });
-};
-
 describe('pinch helpers', () => {
   before(() => {
     fixture.setBase('test');
@@ -53,31 +39,30 @@ describe('pinch helpers', () => {
 
     it('should calculate the correct offset', (done) => {
       const node = element.querySelector('.img-wrapper');
+      const img = element.querySelector('.img-wrapper img');
       const { x, y} = calc(node, coordSequence[1]);
-      mouseEvent('mousemove', node, 100, coordSequence[1])
+      mouseEvent('mousemove', img, 100, coordSequence[1])
       .then(({el, event}) => {
         const offset = getOffsetProcent(Object.assign({}, event, {
           currentTarget: el,
         }), node.getBoundingClientRect());
-        console.log(offset);
-        expect(offset.x).to.eql(x);
-        expect(offset.y).to.eql(y);
-        console.log('boom1');
+        expect(offset.x).to.eql(0.02);
+        expect(offset.y).to.eql(0.12);
         done();
       });
     });
 
     it('should calculate the correct offset', (done) => {
       const node = element.querySelector('.img-wrapper');
+      const img = element.querySelector('.img-wrapper img');
       const { x, y} = calc(node, coordSequence[2]);
-      mouseEvent('mousemove', node, 100, coordSequence[2])
+      mouseEvent('mousemove', img, 100, coordSequence[2])
       .then(({el, event}) => {
         const offset = getOffsetProcent(Object.assign({}, event, {
           currentTarget: el,
         }), node.getBoundingClientRect());
         expect(offset.x).to.eql(x);
         expect(offset.y).to.eql(y);
-        console.log('boom2');
         done();
       });
     });

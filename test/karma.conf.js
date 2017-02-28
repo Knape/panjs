@@ -1,6 +1,32 @@
 // Karma configuration
 // Generated on Wed Mar 18 2015 11:41:18 GMT+0800 (CST)
 
+const coverage_reporters = [
+  { type: 'text-summary' },
+];
+const reporters = [
+  'spec',
+  'coverage',
+];
+var browsers = ['Firefox']; // for local builds
+var sauceLaunchers = require('./saucelab_browsers');
+
+if (process.env.TRAVIS) {
+  console.log('On Travis sending coveralls');
+  coverage_reporters.push( { type : 'lcov', subdir : 'coverage' } );
+  reporters.push('coveralls');
+} else {
+  console.log('Not on Travis so not sending coveralls');
+  coverage_reporters.push( { type : 'html', subdir : 'coverage' } );
+}
+if (process.env.SAUCE_USERNAME) {
+  console.log('Will use sauceLabs');
+  reporters.push('saucelabs');
+  browsers = Object.keys(sauceLaunchers);
+} else {
+  console.log('No sauceLabs');
+}
+
 module.exports = (config) => {
   config.set({
 
@@ -66,12 +92,14 @@ module.exports = (config) => {
       'karma-webpack',
       'karma-mocha',
       'karma-coverage',
+      'karma-spec-reporter',
       'karma-chai',
       'karma-sinon-chai',
       'karma-sinon',
       'karma-coveralls',
       'karma-sourcemap-loader',
       'karma-fixture',
+      'karma-sauce-launcher',
       'karma-html2js-preprocessor',
       'karma-firefox-launcher',
       'karma-phantomjs-launcher',
@@ -81,19 +109,11 @@ module.exports = (config) => {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: process.env.TRAVIS ? ['progress', 'coverage', 'coveralls'] : ['progress', 'coverage'],
+    reporters: reporters,
 
     coverageReporter: {
       dir: 'test',
-      reporters: [{
-        type: 'html',
-        subdir: 'coverage'
-      }, {
-        type: 'text',
-      }, {
-        type: 'lcov',
-        subdir: 'coverage'
-      }]
+      reporters: coverage_reporters,
     },
 
     // web server port
@@ -106,13 +126,19 @@ module.exports = (config) => {
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_DEBUG,
 
-
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: process.env.TRAVIS ? ['Firefox'] : ['Firefox'],
+    browsers: browsers,
+
+    customLaunchers: sauceLaunchers,
+
+    sauceLabs: {
+      username: 'Knape',
+      testName: 'panJS'
+    },
 
     phantomjsLauncher: {
       // Have phantomjs exit if a ResourceError is encountered (useful if karma exits without killing phantom)
