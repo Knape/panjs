@@ -70,6 +70,7 @@ bower install panjs --save
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/PanJs.svg)](https://saucelabs.com/u/PanJs)
 
+Note: If you attend to use this module with older browser its mandatory to polyfill both `Array.from` and `Object.assign
 
 ## License
 

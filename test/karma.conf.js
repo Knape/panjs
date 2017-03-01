@@ -1,10 +1,11 @@
 // Karma configuration
 // Generated on Wed Mar 18 2015 11:41:18 GMT+0800 (CST)
 
-const coverage_reporters = [
+const coverageReporters = [
   { type: 'text-summary' },
 ];
 const reporters = [
+  'progress',
   'spec',
   'coverage',
 ];
@@ -13,11 +14,11 @@ var sauceLaunchers = require('./saucelab_browsers');
 
 if (process.env.TRAVIS) {
   console.log('On Travis sending coveralls');
-  coverage_reporters.push( { type : 'lcov', subdir : 'coverage' } );
+  coverageReporters.push( { type : 'lcov', subdir : 'coverage' } );
   reporters.push('coveralls');
 } else {
   console.log('Not on Travis so not sending coveralls');
-  coverage_reporters.push( { type : 'html', subdir : 'coverage' } );
+  coverageReporters.push( { type : 'html', subdir : 'coverage' } );
 }
 if (process.env.SAUCE_USERNAME) {
   console.log('Will use sauceLabs');
@@ -113,7 +114,7 @@ module.exports = (config) => {
 
     coverageReporter: {
       dir: 'test',
-      reporters: coverage_reporters,
+      reporters: coverageReporters,
     },
 
     // web server port
@@ -136,7 +137,8 @@ module.exports = (config) => {
     customLaunchers: sauceLaunchers,
 
     sauceLabs: {
-      testName: 'panJS'
+      testName: 'panJS',
+      public: 'public',
     },
 
     phantomjsLauncher: {
