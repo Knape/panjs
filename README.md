@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/Knape/panjs.svg?branch=master)](https://travis-ci.org/Knape/panjs)
 [![Coverage Status](https://coveralls.io/repos/github/Knape/panjs/badge.svg?branch=master)](https://coveralls.io/github/Knape/panjs?branch=master)
+[![Sauce Test Status](https://saucelabs.com/buildstatus/PanJs)](https://saucelabs.com/u/PanJs)
+
 ### Description
 Pan images without dependencies
 
@@ -66,7 +68,7 @@ bower install panjs --save
 
 ## Browser support
 
-[![Sauce Test Status](https://saucelabs.com/buildstatus/Knape)](https://saucelabs.com/u/Knape)
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/PanJs.svg)](https://saucelabs.com/u/PanJs)
 
 
 ## License

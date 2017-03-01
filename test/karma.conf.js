@@ -136,7 +136,6 @@ module.exports = (config) => {
     customLaunchers: sauceLaunchers,
 
     sauceLabs: {
-      username: 'Knape',
       testName: 'panJS'
     },
 
