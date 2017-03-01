@@ -46,6 +46,10 @@ module.exports = (config) => {
 
     // list of files / patterns to load in the browser
     files: [{
+      pattern: 'node_modules/babel-polyfill/dist/polyfill.js',
+      included: true,
+      watched: !process.env.TRAVIS || process.env.NODE_ENV !== 'production'
+    }, {
       pattern: 'test/specs/*.js',
       included: true,
       watched: !process.env.TRAVIS || process.env.NODE_ENV !== 'production'
@@ -93,6 +97,7 @@ module.exports = (config) => {
       'karma-webpack',
       'karma-mocha',
       'karma-coverage',
+      'karma-babel-preprocessor',
       'karma-spec-reporter',
       'karma-chai',
       'karma-sinon-chai',
