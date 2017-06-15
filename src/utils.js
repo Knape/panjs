@@ -15,39 +15,53 @@ const extractStyleProp = (style: string) => (
     })
 );
 
-export const getPosition = (el) => {
-  const rect = el.getBoundingClientRect();
-  return (type) => {
+export const getPosition = (el: HTMLElement | EventTarget | null): Function => {
+  const rect: {
+    width: number,
+    height: number,
+    left: number,
+    top: number,
+  } = (el && typeof el.getBoundingClientRect === 'function') ? el.getBoundingClientRect() : {
+    width: 0,
+    height: 0,
+    left: 0,
+    top: 0,
+  };
+  return (type: string) => {
     return (type) ? rect[type] : rect;
   };
 };
 
-const calcOffset = (e: MouseEvent, type: string, position) => (
+const calcOffset = (e: {
+  clientX: number,
+  clientY: number,
+}, type: string, position: number) => (
   Math.abs(position - e[type])
 );
 
-const handleAnimation = (el: EventTarget, transition: string, duration: number, ease: string): void => {
+const handleAnimation = (el: HTMLElement, duration: number, ease: string): void => {
   const { style } = el;
   style.transformOrigin = '0% 0%';
-  style[`${transition}TimingFunction`] = ease;
-  style[`${transition}Duration`] = `${duration}ms`;
+  style.transitionTimingFunction = ease;
+  style.transitionDuration = `${duration}ms`;
 };
 
-export const getOffsetProcent = (e: MouseEvent, { width, height, top, left }): Object => {
+export const getOffsetProcent = (e: MouseEvent, boundingRect: Object): Object => {
+  const { width, height, top, left } = boundingRect;
   return {
     x: calcOffset(e, 'clientX', left) / width,
     y: calcOffset(e, 'clientY', top) / height,
   };
 };
 
-export const getOffsetPixel = (image: HTMLElement, parentPosition, offset: Object): Object => {
+export const getOffsetPixel = (image: Object, parentPosition: Object, offset: Object): Object => {
   return {
     x: (image.width - parentPosition.width) * offset.x,
     y: (image.height - parentPosition.height) * offset.y
   };
 };
 
-export const moveEl = (el: HTMLElement, imagePosition, wrapperPosition, coords: Object, opts: Object = {}): void => {
+export const moveEl = (el: HTMLElement, coords: Object, opts: Object = {}): void => {
   const { style } = el;
 
   const translate = extractTransform(style.transform, 'translate');
@@ -57,6 +71,6 @@ export const moveEl = (el: HTMLElement, imagePosition, wrapperPosition, coords: 
   const offsetY = opts.yAxisLock ? Math.abs(preOffset[1] || 0) : Math.abs(coords.y);
 
   const translateProp = `translate(${-offsetX}px, ${-offsetY}px)`;
-  handleAnimation(el, 'transition', opts.speed, opts.ease);
+  handleAnimation(el, opts.speed, opts.ease);
   style.transform = `${translateProp}`;
 };

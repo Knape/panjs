@@ -4,7 +4,7 @@ import defaults from './defaults';
 import eventDispatcher from './events';
 import { getOffsetPixel, getOffsetProcent, moveEl, getPosition } from './utils';
 
-const setTarget = (el, opts) => (
+const setTarget = (el: HTMLElement, opts: Object): HTMLElement | null => (
   el.querySelector(opts.target ? `img${opts.target}` : 'img')
 );
 
@@ -42,23 +42,27 @@ const panjs = (targets: string | Object, options: Object = {}) => {
   };
 
   const calcMove = (e: MouseEvent): void => {
+    if (!image || !position) return;
     offset = getOffsetProcent(e, position());
     const imagePosition = image.getBoundingClientRect();
     dispatchPanEvent('mousemove', 'before', offset, e);
-    moveEl(image, imagePosition, position(), getOffsetPixel(imagePosition, position(), offset), opts);
+    const calledPosition = position();
+    moveEl(image, getOffsetPixel(imagePosition, calledPosition, offset), opts);
   };
 
   const mouseLeave = (e: MouseEvent): void => {
+    if (!position) return;
     const { width, height } = position();
     offset = getOffsetProcent(e, {width, height});
     dispatchPanEvent('mouseleave', 'before', offset, e);
   };
 
   const calcMoveResize = (e): void => {
+    if (!image) return;
     position = getPosition(element);
     const imagePosition = image.getBoundingClientRect();
     dispatchPanEvent('resize', 'before', offset, e);
-    moveEl(image, imagePosition, position(), getOffsetPixel(imagePosition, position(), offset), opts);
+    moveEl(image, getOffsetPixel(imagePosition, position(), offset), opts);
   };
 
   const attachEvents = (el: HTMLElement): void => {
@@ -83,12 +87,13 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    * @return { Void }
    */
   const reset = (opt: Object = {}): void => {
-    if (!element) return;
+    if (!element || !position) return;
     image = setTarget(element, opts);
-    const imagePosition = image.getBoundingClientRect();
     if (!image) return;
+    const imagePosition = image.getBoundingClientRect();
     const resetOpts = Object.assign({}, opts, opt);
-    moveEl(image, imagePosition, position(), getOffsetPixel(imagePosition, position(), resetOpts.offset), resetOpts);
+    const calledPosition = position();
+    moveEl(image, getOffsetPixel(imagePosition, calledPosition, resetOpts.offset), resetOpts);
   };
 
   /**
@@ -97,7 +102,7 @@ const panjs = (targets: string | Object, options: Object = {}) => {
    * @return { Void }
    */
   const destroy = (opt: Object = {}): void => {
-    if (!element) return;
+    if (!element || !image) return;
     dispatchPanEvent('destroy', 'before', {}, {});
     reset(opt);
     // remove event listeners
@@ -133,19 +138,20 @@ const panjs = (targets: string | Object, options: Object = {}) => {
         console.warn('missing target, either pass an node or a string');
     }
 
-    if (element && setTarget(element, opts)) {
-      position = getPosition(element);
+    if (element) {
       image = setTarget(element, opts);
+      if (!image) return;
+      position = getPosition(element);
       const imagePosition = image.getBoundingClientRect();
       attachEvents(element);
-      moveEl(image, imagePosition, position(), getOffsetPixel(imagePosition, position(), offset), opts);
+      moveEl(image, getOffsetPixel(imagePosition, position(), offset), opts);
     }
 
     dispatchPanEvent('init', 'after', {}, {});
   };
 
   // trigger initial setup
-  setup(targets, options);
+  setup(targets);
 
   return {
     setup,
