@@ -3,12 +3,17 @@
 ### In progress
 
 - Adds speed and easing effect to panjs, defaults to 0ms speed transition
-- Adds speed and easing to reset and destroy as args
-- Fixes bug in mouse over 'on' event
 
 ---
 
 ### Releases
+
+### `0.7.0` — June 16, 2017
+
+###### NEW FEATURES
+- Adds speed and easing to reset and destroy as args
+- Fixes bug in mouse over 'on' event
+
 
 ### `0.6.5` — February 22, 2017
 
