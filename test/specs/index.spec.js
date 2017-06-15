@@ -5,7 +5,6 @@ import panjs from '../../src/';
 import {extractTransform, extractStyleProp} from './utils';
 
 let firstElement;
-let secondElement;
 
 describe('panjs()', () => {
   before(() => {
@@ -14,9 +13,8 @@ describe('panjs()', () => {
 
   beforeEach(() => {
     sinon.spy(console, 'warn');
-    fixture.load('test.html', 'test2.html');
+    fixture.load('test.html');
     firstElement = fixture.el.querySelector('.wrapper');
-    secondElement = fixture.el.querySelector('.wrapper');
   });
 
   afterEach(() => {
@@ -52,13 +50,13 @@ describe('panjs()', () => {
     });
 
     it('should allow to pass target options', () => {
-      const pan = panjs('.img-wrapper-two', {
+      const pan = panjs('.img-wrapper', {
         target: '.main-image-two',
         offset: {x: 0.2, y: 0.2},
       });
-      const preTranslate = extractTransform(pan.element.childNodes[3].style.transform, 'translate');
+      const preTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
       const preOffset = extractStyleProp(preTranslate);
-      expect(preOffset).to.deep.eql([-20, -20]);
+      expect(preOffset).to.deep.eql([-70, -53]);
     });
   });
 
@@ -96,7 +94,7 @@ describe('panjs()', () => {
       const pan = panjs(node, { offset: { x: 0.2, y: 0.2}});
       const postTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
       const postOffset = extractStyleProp(postTranslate);
-      expect(postOffset).to.deep.eql([-20, -20]);
+      expect(postOffset).to.deep.eql([-70, -53]);
       pan.reset({offset: {x: 0, y: 0}});
       const preTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
       const preOffset = extractStyleProp(preTranslate);
@@ -108,11 +106,11 @@ describe('panjs()', () => {
       const pan = panjs(node, { offset: { x: 0.2, y: 0.2}});
       const postTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
       const postOffset = extractStyleProp(postTranslate);
-      expect(postOffset).to.deep.eql([-20, -20]);
+      expect(postOffset).to.deep.eql([-70, -53]);
       pan.reset();
       const preTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
       const preOffset = extractStyleProp(preTranslate);
-      expect(preOffset).to.deep.eql([-20, -20]);
+      expect(preOffset).to.deep.eql([-70, -53]);
     });
 
     it('should be able to reset with custom values', () => {
@@ -124,7 +122,7 @@ describe('panjs()', () => {
       pan.reset({offset: {x: 0.2, y: 0.2}});
       const preTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
       const preOffset = extractStyleProp(preTranslate);
-      expect(preOffset).to.deep.eql([-20, -20]);
+      expect(preOffset).to.deep.eql([-70, -53]);
     });
 
     it('should be able to destroy', () => {
@@ -142,7 +140,7 @@ describe('panjs()', () => {
       pan.destroy({offset: { x: 0.2, y: 0.2}});
       const preTranslate = extractTransform(pan.element.childNodes[1].style.transform, 'translate');
       const preOffset = extractStyleProp(preTranslate);
-      expect(preOffset).to.deep.eql([-20, -20]);
+      expect(preOffset).to.deep.eql([-70, -53]);
     });
   })
 });

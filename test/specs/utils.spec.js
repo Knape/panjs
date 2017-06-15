@@ -1,8 +1,9 @@
 /* globals it, describe, before, beforeEach, expect, chai, sinonChai, sinon, fixture */
 /* eslint no-unused-expressions: 0 */
+import th from 'triggerhappy'
 
 import { getOffsetProcent, getOffsetPixel, moveEl, getWidth, getHeight } from '../../src/utils';
-import { mouseEvent, extractTransform, extractStyleProp } from './utils';
+
 let element;
 
 const coordSequence = [
@@ -22,7 +23,7 @@ const calc = (node, coords) => {
   };
 };
 
-describe('pinch helpers', () => {
+describe('pan helpers', () => {
   before(() => {
     fixture.setBase('test');
   });
@@ -37,34 +38,25 @@ describe('pinch helpers', () => {
       expect(typeof getOffsetProcent).to.eql('function');
     });
 
-    it('should calculate the correct offset', (done) => {
+    it('should calculate the correct offset', () => {
       const node = element.querySelector('.img-wrapper');
       const img = element.querySelector('.img-wrapper img');
-      const { x, y} = calc(node, coordSequence[1]);
-      mouseEvent('mousemove', img, 100, coordSequence[1])
-      .then(({el, event}) => {
-        const offset = getOffsetProcent(Object.assign({}, event, {
-          currentTarget: el,
-        }), node.getBoundingClientRect());
-        expect(offset.x).to.eql(0.02);
-        expect(offset.y).to.eql(0.12);
-        done();
-      });
+      const { x, y } = calc(node, coordSequence[1]);
+      const event = th.fire('mouseEvent', 'mousemove', img, coordSequence[1])
+      const offset = getOffsetProcent(event, node.getBoundingClientRect());
+
+      expect(offset.x).to.eql(x);
+      expect(offset.y).to.eql(y);
     });
 
-    it('should calculate the correct offset', (done) => {
+    it('should calculate the correct offset', () => {
       const node = element.querySelector('.img-wrapper');
       const img = element.querySelector('.img-wrapper img');
       const { x, y} = calc(node, coordSequence[2]);
-      mouseEvent('mousemove', img, 100, coordSequence[2])
-      .then(({el, event}) => {
-        const offset = getOffsetProcent(Object.assign({}, event, {
-          currentTarget: el,
-        }), node.getBoundingClientRect());
-        expect(offset.x).to.eql(x);
-        expect(offset.y).to.eql(y);
-        done();
-      });
+      const event = th.fire('mouseEvent', 'mousemove', img, coordSequence[2])
+      const offset = getOffsetProcent(event, node.getBoundingClientRect());
+      expect(offset.x).to.eql(x);
+      expect(offset.y).to.eql(y);
     });
   });
 
@@ -77,8 +69,8 @@ describe('pinch helpers', () => {
       const node = element.querySelector('.img-wrapper');
       const image = element.querySelector('img');
       const {x, y} = getOffsetPixel(image.getBoundingClientRect(), node.getBoundingClientRect(), {x: -0.5, y: -0.5});
-      expect(x).to.eql(-50);
-      expect(y).to.eql(-50);
+      expect(x).to.eql(-176);
+      expect(y).to.eql(-134);
     });
   });
 

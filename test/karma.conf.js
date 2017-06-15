@@ -50,7 +50,7 @@ module.exports = (config) => {
       included: true,
       watched: !process.env.TRAVIS || process.env.NODE_ENV !== 'production'
     }, {
-      pattern: 'test/specs/*.js',
+      pattern: 'test/**/*.spec.js',
       included: true,
       watched: !process.env.TRAVIS || process.env.NODE_ENV !== 'production'
     }, {

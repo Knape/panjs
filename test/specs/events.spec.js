@@ -1,8 +1,8 @@
 /* globals it, describe, before, beforeEach, expect, chai, sinonChai, sinon, fixture */
 /* eslint no-unused-expressions: 0 */
+import th from 'triggerhappy'
 
 import panjs from '../../src/';
-import {extractTransform, extractStyleProp, mouseEvent, resizeEvent, mousePoint, mouseAnimate} from './utils';
 
 let element;
 let node;
@@ -25,23 +25,18 @@ describe('events', () => {
     });
 
     it('should fire mousemove event', (done) => {
-      const basePoint = mousePoint(node, 0.5, 0.5);
-      mouseEvent('mousemove', node, 100, basePoint(1));
-      pan.on('mousemove', () => {
-        done();
-      });
+      pan.on('mousemove', () => { done() });
+      th.fire('MouseEvent', 'mousemove', node)
     });
 
     it('should fire mouseenter event', (done) => {
-      const basePoint = mousePoint(node, 0.5, 0.5);
-      mouseEvent('mouseenter', node, 100, basePoint(1));
-      pan.on('mouseenter', () => done());
+      pan.on('mouseenter', () => { done() });
+      th.fire('MouseEvent', 'mouseenter', node)
     });
 
     it('should fire mouseleave event', (done) => {
-      const basePoint = mousePoint(node, 0.5, 0.5);
-      mouseEvent('mouseleave', node, 100, basePoint(1));
-      pan.on('mouseleave', () => done());
+      pan.on('mouseleave', () => { done() });
+      th.fire('mouseleave', 'mouseleave', node)
     });
   });
 });
