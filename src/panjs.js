@@ -13,10 +13,10 @@ const panjs = (targets: string | Object, options: Object = {}) => {
   let element = null;
   let position = null;
   let image = null;
-  let offset = {...defaults.offset, ...options.offset};
+  let offset = options.offset || defaults.offset;
 
   // Base configuration for the pinch instance
-  const opts = {...defaults, ...options};
+  const opts = Object.assign({}, defaults, options);
   const { on, dispatch } = eventDispatcher();
 
   /**
