@@ -128,7 +128,19 @@ exports.default = {
    * overwrite to lock y-axis paning
    * @yAxisLock {Boolean}
    */
-  yAxisLock: false
+  yAxisLock: false,
+
+  /**
+   * Default animation speed
+   * @speed {Number}
+   */
+  speed: 0,
+
+  /**
+   * Default easing
+   * @speed {string}
+   */
+  ease: 'ease'
 };
 
 /***/ }),
@@ -161,18 +173,8 @@ var eventDispatcher = function eventDispatcher() {
   };
 
   /**
-   * Deregister a handler for event.
+   * dispatch an event for a handler.
    */
-  var off = function off(eventName, handler) {
-    if (events[eventName]) {
-      for (var i = 0; i < events[eventName].length; i += 1) {
-        if (events[eventName][i] === handler) {
-          events[eventName].splice(i, 1);
-          break;
-        }
-      }
-    }
-  };
 
   var dispatch = function dispatch(eventName, data) {
     if (events[eventName]) {
@@ -184,7 +186,6 @@ var eventDispatcher = function eventDispatcher() {
 
   return {
     on: on,
-    off: off,
     dispatch: dispatch
   };
 };
@@ -203,8 +204,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _defaults = __webpack_require__(1);
 
@@ -227,10 +226,12 @@ var panjs = function panjs(targets) {
 
   // private variable cache
   var element = null;
-  var offset = _extends({}, _defaults2.default.offset, options.offset);
+  var position = null;
+  var image = null;
+  var offset = options.offset || _defaults2.default.offset;
 
   // Base configuration for the pinch instance
-  var opts = _extends({}, _defaults2.default, options);
+  var opts = Object.assign({}, _defaults2.default, options);
 
   var _eventDispatcher = (0, _events2.default)(),
       on = _eventDispatcher.on,
@@ -246,34 +247,50 @@ var panjs = function panjs(targets) {
   **/
 
 
-  var dispatchPanEvent = function dispatchPanEvent(eventName, phase) {
-    var event = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
+  var dispatchPanEvent = function dispatchPanEvent(eventName, phase, off, event) {
     dispatch(eventName, Object.assign(event, {
-      phase: phase
+      phase: phase,
+      offset: off
     }));
   };
 
   var mouseEnter = function mouseEnter(e) {
-    dispatchPanEvent('mouseenter', 'before', e);
+    position = (0, _utils.getPosition)(e.currentTarget);
+
+    var _position = position(),
+        width = _position.width,
+        height = _position.height;
+
+    offset = (0, _utils.getOffsetProcent)(e, { width: width, height: height });
+    dispatchPanEvent('mouseenter', 'before', offset, e);
   };
 
   var calcMove = function calcMove(e) {
-    offset = (0, _utils.getOffsetProcent)(e);
-    var image = setTarget(e.currentTarget, opts);
-    if (!image) return;
-    (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(e.currentTarget, image, offset), opts);
+    if (!image || !position) return;
+    offset = (0, _utils.getOffsetProcent)(e, position());
+    var imagePosition = image.getBoundingClientRect();
+    dispatchPanEvent('mousemove', 'before', offset, e);
+    var calledPosition = position();
+    (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(imagePosition, calledPosition, offset), opts);
   };
 
   var mouseLeave = function mouseLeave(e) {
-    dispatchPanEvent('mouseleave', 'before', e);
+    if (!position) return;
+
+    var _position2 = position(),
+        width = _position2.width,
+        height = _position2.height;
+
+    offset = (0, _utils.getOffsetProcent)(e, { width: width, height: height });
+    dispatchPanEvent('mouseleave', 'before', offset, e);
   };
 
-  var calcMoveResize = function calcMoveResize() {
-    if (!element || !Object.hasOwnProperty.call(offset, 'x')) return;
-    var image = setTarget(element, opts);
+  var calcMoveResize = function calcMoveResize(e) {
     if (!image) return;
-    (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(element, image, offset), opts);
+    position = (0, _utils.getPosition)(element);
+    var imagePosition = image.getBoundingClientRect();
+    dispatchPanEvent('resize', 'before', offset, e);
+    (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(imagePosition, position(), offset), opts);
   };
 
   var attachEvents = function attachEvents(el) {
@@ -300,11 +317,13 @@ var panjs = function panjs(targets) {
   var reset = function reset() {
     var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    if (!element) return;
-    var image = setTarget(element, opts);
+    if (!element || !position) return;
+    image = setTarget(element, opts);
     if (!image) return;
-    var combinedOffset = Object.assign(opts.offset, opt.offset);
-    (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(element, image, combinedOffset), opts);
+    var imagePosition = image.getBoundingClientRect();
+    var resetOpts = Object.assign({}, opts, opt);
+    var calledPosition = position();
+    (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(imagePosition, calledPosition, resetOpts.offset), resetOpts);
   };
 
   /**
@@ -313,12 +332,14 @@ var panjs = function panjs(targets) {
    * @return { Void }
    */
   var destroy = function destroy() {
-    if (!element) return;
-    dispatchPanEvent('destroy', 'before', {});
-    reset();
+    var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    if (!element || !image) return;
+    dispatchPanEvent('destroy', 'before', {}, {});
+    reset(opt);
     // remove event listeners
     detachhEvents(element);
-    dispatchPanEvent('destroy', 'after', {});
+    dispatchPanEvent('destroy', 'after', {}, {});
   };
 
   var getOffset = function getOffset() {
@@ -333,7 +354,7 @@ var panjs = function panjs(targets) {
    **/
   var setup = function setup(target) {
     if (element) destroy();
-    dispatchPanEvent('init', 'before', {});
+    dispatchPanEvent('init', 'before', {}, {});
 
     // resolve target
     // pinchit allows for both a node or a string to be passed
@@ -350,16 +371,19 @@ var panjs = function panjs(targets) {
     }
 
     if (element) {
-      var image = setTarget(element, opts);
+      image = setTarget(element, opts);
+      if (!image) return;
+      position = (0, _utils.getPosition)(element);
+      var imagePosition = image.getBoundingClientRect();
       attachEvents(element);
-      (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(element, image, offset), opts);
+      (0, _utils.moveEl)(image, (0, _utils.getOffsetPixel)(imagePosition, position(), offset), opts);
     }
 
-    dispatchPanEvent('init', 'after', {});
+    dispatchPanEvent('init', 'after', {}, {});
   };
 
   // trigger initial setup
-  setup(targets, options);
+  setup(targets);
 
   return {
     setup: setup,
@@ -397,47 +421,46 @@ var extractStyleProp = function extractStyleProp(style) {
   });
 };
 
-var getElement = function getElement() {
-  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'width';
-  return function (el) {
-    return type ? el.getBoundingClientRect()[type] : el.getBoundingClientRect();
+var getPosition = exports.getPosition = function getPosition(el) {
+  var rect = el && typeof el.getBoundingClientRect === 'function' ? el.getBoundingClientRect() : {
+    width: 0,
+    height: 0,
+    left: 0,
+    top: 0
+  };
+  return function (type) {
+    return type ? rect[type] : rect;
   };
 };
 
-var getWidth = getElement('width');
-var getHeight = getElement('height');
-var getX = getElement('left');
-var getY = getElement('top');
-
-var subtract = function subtract(el) {
-  return function (acc, val) {
-    return acc === 0 ? acc + val(el) : acc - val(el);
-  };
+var calcOffset = function calcOffset(e, type, position) {
+  return Math.abs(position - e[type]);
 };
 
-var calcOffset = function calcOffset(e, type) {
-  for (var _len = arguments.length, rest = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-    rest[_key - 2] = arguments[_key];
-  }
+var handleAnimation = function handleAnimation(el, duration, ease) {
+  var style = el.style;
 
-  return Math.abs(Math.floor(rest.reduce(subtract(e.currentTarget), 0) - e[type]));
+  style.transformOrigin = '0% 0%';
+  style.transitionTimingFunction = ease;
+  style.transitionDuration = duration + 'ms';
 };
 
-var getOffsetProcent = exports.getOffsetProcent = function getOffsetProcent(e) {
-  return {
-    x: calcOffset(e, 'clientX', getX) / getWidth(e.currentTarget),
-    y: calcOffset(e, 'clientY', getY) / getHeight(e.currentTarget)
-  };
-};
-
-var getOffsetPixel = exports.getOffsetPixel = function getOffsetPixel(el, image, offset) {
-  var _image$getBoundingCli = image.getBoundingClientRect(),
-      width = _image$getBoundingCli.width,
-      height = _image$getBoundingCli.height;
+var getOffsetProcent = exports.getOffsetProcent = function getOffsetProcent(e, boundingRect) {
+  var width = boundingRect.width,
+      height = boundingRect.height,
+      top = boundingRect.top,
+      left = boundingRect.left;
 
   return {
-    x: (width - getWidth(el)) * offset.x,
-    y: (height - getHeight(el)) * offset.y
+    x: calcOffset(e, 'clientX', left) / width,
+    y: calcOffset(e, 'clientY', top) / height
+  };
+};
+
+var getOffsetPixel = exports.getOffsetPixel = function getOffsetPixel(image, parentPosition, offset) {
+  return {
+    x: (image.width - parentPosition.width) * offset.x,
+    y: (image.height - parentPosition.height) * offset.y
   };
 };
 
@@ -445,11 +468,15 @@ var moveEl = exports.moveEl = function moveEl(el, coords) {
   var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var style = el.style;
 
+
   var translate = extractTransform(style.transform, 'translate');
   var preOffset = extractStyleProp(translate);
-  var offsetX = opts.xAxisLock ? -Math.abs(preOffset[0] || 0) : -Math.abs(coords.x);
-  var offsetY = opts.yAxisLock ? -Math.abs(preOffset[1] || 0) : -Math.abs(coords.y);
-  var translateProp = 'translate(' + offsetX + 'px, ' + offsetY + 'px)';
+
+  var offsetX = opts.xAxisLock ? Math.abs(preOffset[0] || 0) : Math.abs(coords.x);
+  var offsetY = opts.yAxisLock ? Math.abs(preOffset[1] || 0) : Math.abs(coords.y);
+
+  var translateProp = 'translate(' + -offsetX + 'px, ' + -offsetY + 'px)';
+  handleAnimation(el, opts.speed, opts.ease);
   style.transform = '' + translateProp;
 };
 
